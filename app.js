@@ -1,12 +1,22 @@
 //The app's dependencies
-const methodOverride = require("method-override")
-    bodyParser = require("body-parser");
+const passportLocalMongoose = require("passport-local-mongoose"),
+    methodOverride = require("method-override"),
+    localStrategy = require("passport-local"),
+    bodyParser = require("body-parser"),
     mongoose = require("mongoose"),
+    passport = require("passport"),
     express = require("express"),
     app = express();
 
 //Allows us to use our environmental variables
 require("dotenv").config();
+
+app.use(require("express-session")({
+    secret: process.env.SECRET,
+    resave: false,
+    saveUninitialized: false
+}))
+
 
 //gets the routes that are refactored into different files
 const indexRoutes = require("./routes/index");
@@ -34,6 +44,19 @@ mongoose.connect(process.env.MONGOOSE_LINK, {useNewUrlParser: true, useUnifiedTo
     //Allows us to be able to use PUT and DELETE routes
     app.use(methodOverride("_method"));
 
+
+//Gives my app passport which is auth: passwords
+app.use(passport.initialize());
+app.use(passport.session())
+
+var User = require("./models/user");
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+app.use(function(req, res, next){
+    res.locals.currentAdmin = req.user;
+    next();
+})
 
 
 app.listen(process.env.PORT, ()=> console.log("Server is ONLINE"));
