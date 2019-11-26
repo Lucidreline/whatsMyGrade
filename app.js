@@ -54,13 +54,15 @@ app.use(function(req, res, next){
 //gets the routes that are refactored into different files
 let indexRoutes = require("./routes/index"),
     userRoutes = require("./routes/user"),
-    courseRoutes = require("./routes/course")
+    courseRoutes = require("./routes/course"),
+    gradeRoutes = require("./routes/grade");
 
 
 //Uses the refactored routes
 app.use(indexRoutes);
 app.use(userRoutes);
 app.use(courseRoutes);
+app.use(gradeRoutes);
 
 
 app.listen(process.env.PORT, ()=> console.log("Server is ONLINE"));
