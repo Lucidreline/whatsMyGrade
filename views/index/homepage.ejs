@@ -1,5 +1,9 @@
 <% include ../partials/header %>
 
+<% if (loggedInUser){ %>
+    <h1>Welcome <%= loggedInUser.username %></h1>
+<%} %>
+
 <h1>Home page in the house!</h1>
 
 <% include ../partials/footer %>

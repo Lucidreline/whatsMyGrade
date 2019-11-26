@@ -18,14 +18,6 @@ app.use(require("express-session")({
 }))
 
 
-//gets the routes that are refactored into different files
-const indexRoutes = require("./routes/index");
-
-//Uses the refactored routes
-app.use(indexRoutes);
-
-
-
 
 //Lets connect to that database foo
 mongoose.connect(process.env.MONGOOSE_LINK, {useNewUrlParser: true, useUnifiedTopology: true })
@@ -54,9 +46,19 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 app.use(function(req, res, next){
-    res.locals.currentAdmin = req.user;
+    res.locals.loggedInUser = req.user;
     next();
 })
+
+
+//gets the routes that are refactored into different files
+let indexRoutes = require("./routes/index"),
+    userRoutes = require("./routes/user")
+
+
+//Uses the refactored routes
+app.use(indexRoutes);
+app.use(userRoutes);
 
 
 app.listen(process.env.PORT, ()=> console.log("Server is ONLINE"));
