@@ -3,10 +3,10 @@
 <h1>Log in or register my man!</h1>
 
 <form action="/user/register" method="POST">
-    <input type="text" name="firstName" placeholder="First Name">
-    <input type="text" name="email" placeholder="Email">
-    <input type="text" name="username" placeholder="Username">
-    <input type="Password" name="password" placeholder="Password">
+    <input required type="text" name="firstName" placeholder="First Name">
+    <input required type="email" name="email" placeholder="Email">
+    <input required type="text" name="username" placeholder="Username">
+    <input required type="Password" name="password" placeholder="Password">
     <button>Submit</button>
 </form>
 

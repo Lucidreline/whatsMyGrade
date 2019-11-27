@@ -20,6 +20,27 @@ router.get("/courses", isLoggedIn, async (req, res)=>{
     })
 })
 
+router.get("/courses/new", isLoggedIn, (req, res)=> res.render("course/new"))
+
+
+router.post("/courses/new", isLoggedIn, (req, res)=>{
+    Course.create(req.body.course, (err, createdCourse)=>{
+        if(err){
+            console.log("Error creating: " + req.body.course);
+            res.redirect("/courses");
+            return;
+        }
+        
+        createdCourse.author = req.user;
+        req.user.courses.push(createdCourse);
+        //Here im saving both the user and course. I could use async here probably but for now this is a quick fix
+        //i didnt error check because im a savage
+        createdCourse.save((error, savedCourse)=>{
+            req.user.save((errors, saveduser)=>res.redirect("/courses")) 
+        })
+    })
+})
+
 //Show page, more detailed page of a course
 router.get("/courses/:id", isLoggedIn, (req, res)=>{
     //uses the URL to get an ID and find the course with that matching ID
@@ -41,28 +62,6 @@ router.get("/courses/:id", isLoggedIn, (req, res)=>{
             res.render("course/show", {course: foundCourse, grades: foundGrades});
         })
         
-    })
-})
-
-
-router.get("/courses/new", isLoggedIn, (req, res)=> res.render("course/new"))
-
-
-router.post("/courses/new", isLoggedIn, (req, res)=>{
-    Course.create(req.body.course, (err, createdCourse)=>{
-        if(err){
-            console.log("Error creating: " + req.body.course);
-            res.redirect("/courses");
-            return;
-        }
-        
-        createdCourse.author = req.user;
-        req.user.courses.push(createdCourse);
-        //Here im saving both the user and course. I could use async here probably but for now this is a quick fix
-        //i didnt error check because im a savage
-        createdCourse.save((error, savedCourse)=>{
-            req.user.save((errors, saveduser)=>res.redirect("/courses")) 
-        })
     })
 })
 

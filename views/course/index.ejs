@@ -1,5 +1,15 @@
+<% include ../partials/header %>
+
+<a href="/courses/new">
+    <button>
+        New course
+    </button>
+</a>
+
 <% courseList.forEach((course)=>{ %>
 
     <h1><%= course.name %></h1>
     <a href="courses/<%= course._id %>">show</a>
 <% }) %>
+
+<% include ../partials/footer %>

@@ -1,6 +1,32 @@
+<% include ../partials/header %>
+
 
 <form action="/courses/<%= course._id %>/grade/new" method="POST">
-    <input type="text" name="grade[name]" placeholder="name">
-    <input type="text" name="grade[category]" placeholder="category">
+    <input required type="text" name="grade[name]" placeholder="name">
+    <input required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved">
+    <input required type="number" name="grade[possiblePoints]" placeholder="Total Possible Points">
+
+
+        <select name="exsistingCategory[name]">
+            <% categories.forEach((category)=>{ %>
+                <option value="<%= category.name %>"><%= category.name %></option>
+            <% }) %>
+            <option value="eop">eop</option>
+            <option value="New">New</option>
+        </select>
+
+        Try to make this bottom part only show up when user selects new using javascript
+        <p>
+            Create a category for this grade
+        </p>
+
+    
+    <input type="text" name="newCategory[name]" placeholder="New Category name">
+    <p>What percentage is this worth?</p>
+    <input type="number" name="newCategory[percentWorth]" >
+
+
     <button>Submit</button>
 </form>
+
+<% include ../partials/footer %>

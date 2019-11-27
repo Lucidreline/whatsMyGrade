@@ -6,6 +6,7 @@ var gradeSchema = new mongoose.Schema({
     category: String,
     possiblePoints: Number,
     pointsRecieved: Number,
+    percentage: Number,
     course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course"

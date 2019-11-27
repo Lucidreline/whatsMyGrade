@@ -1,4 +1,4 @@
-
+<% include ../partials/header %>
 <%= course.name %>
 
 grades:
@@ -10,6 +10,8 @@ grades:
 <% }) %>
 
 <a href="/courses/<%= course._id %>/grade/new">New grade</a>
+
+<% include ../partials/footer %>
 
 
 

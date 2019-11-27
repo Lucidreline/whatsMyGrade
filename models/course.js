@@ -3,7 +3,12 @@ var mongoose = require("mongoose");
 var courseSchema = new mongoose.Schema({
     name: String,
     color: String,
-    assignmentCategories: [String],
+    categories: [
+        {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category"
+        }
+    ],
     author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
