@@ -1,4 +1,15 @@
 
 <%= course.name %>
 
-<a href="courses/<%= course._id %>/grade/new">show</a>
+grades:
+
+<% grades.forEach((grade)=>{ %>
+    <p>
+        <%= grade.name %>
+    </p>
+<% }) %>
+
+<a href="/courses/<%= course._id %>/grade/new">New grade</a>
+
+
+
