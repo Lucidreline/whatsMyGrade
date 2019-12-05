@@ -6,7 +6,13 @@ var categorySchema = new mongoose.Schema({
     course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
-    }
+    },
+    gradesAssociatedWith:[
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "grades"
+        }
+    ]
 })
 
 module.exports = mongoose.model("Category", categorySchema);

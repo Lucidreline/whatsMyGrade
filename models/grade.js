@@ -3,7 +3,10 @@ const mongoose = require("mongoose");
 
 var gradeSchema = new mongoose.Schema({
     name: String,
-    category: String,
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Category"
+    },
     possiblePoints: Number,
     pointsRecieved: Number,
     percentage: Number,

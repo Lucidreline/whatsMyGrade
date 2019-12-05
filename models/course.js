@@ -3,6 +3,7 @@ var mongoose = require("mongoose");
 var courseSchema = new mongoose.Schema({
     name: String,
     color: String,
+    percentage: Number,
     categories: [
         {
         type: mongoose.Schema.Types.ObjectId,

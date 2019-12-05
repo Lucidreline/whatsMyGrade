@@ -56,6 +56,7 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res)=>{
                             }
                             //we give the new category a course ID to stay in
                             createdCategory.course = foundCourse;
+                            createdCategory.gradesAssociatedWith.push(createdGrade);
                             //We give the new grade the category
                             createdGrade.category = createdCategory.name;
                             //and we push the new category into the courses list of categories
@@ -71,14 +72,25 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res)=>{
                         })
                     }else{
                         //using an old category
-                        //we put the old category into the grade
-                        createdGrade.category = req.body.exsistingCategory.name;
-                        //save both grade and course
-                        foundCourse.save((err, savedCourse)=>{
-                            createdGrade.save((error, savedGrade)=>{
-                                res.redirect("/courses/" + foundCourse._id);
+                        //we search the for the old category
+                        Category.findOne({name: req.body.exsistingCategory.name}, (e, foundCat)=>{
+                            if(e){
+                                console.log("Could not find category")
+                                res.redirect("/courses/" + foundCourse._id);  
+                                return
+                            }
+                            //we put the old category into the grade
+                            foundCat.gradesAssociatedWith.push(createdGrade);
+                            createdGrade.category = foundCat;
+                            //save both grade and course
+                            foundCourse.save((err, savedCourse)=>{
+                                createdGrade.save((error, savedGrade)=>{
+                                    foundCat.save((ERROR, savedGrade)=>{
+                                        res.redirect("/courses/" + foundCourse._id);
+                                    })
+                                });
                             });
-                        });
+                        })
                     } 
                 }
             })
@@ -94,4 +106,8 @@ function isLoggedIn(req, res, next){
         return next();
     else
         res.redirect("/user/login");
+}
+
+function CalculateCoursePercentage (_course){
+
 }
