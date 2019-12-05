@@ -1,4 +1,4 @@
-//The app's dependencies
+//The app's dependencies... we are just requiring all of the dependancies
 const passportLocalMongoose = require("passport-local-mongoose"),
     methodOverride = require("method-override"),
     localStrategy = require("passport-local"),
@@ -8,9 +8,11 @@ const passportLocalMongoose = require("passport-local-mongoose"),
     express = require("express"),
     app = express();
 
-//Allows us to use our environmental variables
+//Allows us to use our environmental variables. These are stored in /.env
 require("dotenv").config();
 
+//This allows a user to stay logged in until they sign out or leave 
+// thus preventing the user from having to log in every time they switch pages.
 app.use(require("express-session")({
     secret: process.env.SECRET,
     resave: false,
@@ -19,7 +21,7 @@ app.use(require("express-session")({
 
 
 
-//Lets connect to that database foo
+//Connects to the mongoose database
 mongoose.connect(process.env.MONGOOSE_LINK, {useNewUrlParser: true, useUnifiedTopology: true })
 
 //Lets config this app.. jazz it up a bit you know?
@@ -37,32 +39,34 @@ mongoose.connect(process.env.MONGOOSE_LINK, {useNewUrlParser: true, useUnifiedTo
     app.use(methodOverride("_method"));
 
 
-//Gives my app passport which is auth: passwords
+//Allows my app to use passport. This makes it possible to have secure passwords
 app.use(passport.initialize());
 app.use(passport.session())
 
+//Gives this file access to the User model
 var User = require("./models/user");
+
+//Contributes to having a user logged in and access to the signed in user.
+    //This is useful if we want to, for example, display the user's name on the nav bar
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+//A middleware. before any page is loaded, it runs this method
 app.use(function(req, res, next){
+    //lets us use the req.user variable from any page
+        //This lets us access the current user's information.
+        //We can use it to display the current users name or courses
     res.locals.loggedInUser = req.user;
     next();
 })
 
 
-//gets the routes that are refactored into different files
-let indexRoutes = require("./routes/index"),
-    userRoutes = require("./routes/user"),
-    courseRoutes = require("./routes/course"),
-    gradeRoutes = require("./routes/grade");
+//gets the route files that are refactored into different files
+app.use(require("./routes/index"));
+app.use(require("./routes/user"));
+app.use(require("./routes/course"));
+app.use(require("./routes/grade"));
 
 
-//Uses the refactored routes
-app.use(indexRoutes);
-app.use(userRoutes);
-app.use(courseRoutes);
-app.use(gradeRoutes);
-
-
+//Makes the server possible. Gives it a port and an IP adress if I give one.
 app.listen(process.env.PORT, ()=> console.log("Server is ONLINE"));
