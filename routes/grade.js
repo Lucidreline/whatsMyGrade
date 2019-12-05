@@ -73,7 +73,7 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res)=>{
                     }else{
                         //using an old category
                         //we search the for the old category
-                        Category.findOne({name: req.body.exsistingCategory.name}, (e, foundCat)=>{
+                        Category.findOne({name: req.body.exsistingCategory.name, course: foundCourse._id }, (e, foundCat)=>{
                             if(e){
                                 console.log("Could not find category")
                                 res.redirect("/courses/" + foundCourse._id);  
