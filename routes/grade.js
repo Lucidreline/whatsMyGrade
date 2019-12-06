@@ -56,7 +56,7 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res)=>{
                     createdGrade.course = foundCourse;
 
                     //add the grade percentage:
-                    createdGrade.percentage = (createdGrade.possiblePoints / createdGrade.pointsRecieved) * 100
+                    createdGrade.percentage = (createdGrade.pointsRecieved / createdGrade.possiblePoints) * 100;
     
                     //next we check if the user wants a new category
                     if(req.body.exsistingCategory.name == "New"){
@@ -74,16 +74,22 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res)=>{
                             createdCategory.gradesAssociatedWith.push(createdGrade);
 
                             //We give the new grade the category
-                            createdGrade.category = createdCategory.name;
+                            createdGrade.category = createdCategory;
 
                             //and we push the new category into the courses list of categories
                             foundCourse.categories.push(createdCategory);
+
+                            
 
                             //we save all 3 (category, grade, and course)
                             foundCourse.save((err, savedCourse)=>{
                                 //The redirect is in the nested call backs so that it won't redirect until the category, grade, and course is saved.
                                 createdGrade.save((error, savedGrade)=>{
-                                    createdCategory.save((ERROR, savedGrade)=> res.redirect("/courses/" + foundCourse._id));
+                                    if(error) console.log(error)
+                                    createdCategory.save((ERROR, savedGrade)=>{
+                                        CalculateCoursePercentage(foundCourse)
+                                        res.redirect("/courses/" + foundCourse._id)
+                                    });
                                 });
                             });
                         })
@@ -133,5 +139,44 @@ function isLoggedIn(req, res, next){
 
 
 function CalculateCoursePercentage (_course){
+    var tempGradeArray = [],
+        allAveragesTimesTheirWorth = [];
 
+    //Loops through all of the courses categories IDs    
+    _course.categories.forEach((categoryID)=>{
+        //Finds a category by the ID
+        Category.findOne({_id: categoryID, course: _course._id}, (errorFindingCategories, foundCategory)=>{
+            foundCategory.gradesAssociatedWith.forEach((gradeID)=>{
+                Grade.findById(gradeID, (foundGradeError, foundGrade)=>{
+                    tempGradeArray.push(foundGrade.percentage / 100);
+                })
+            })
+            allAveragesTimesTheirWorth.push(CalculateAverageOfArray(tempGradeArray) * foundCategory.percentWorth);
+            tempGradeArray = [];
+        })
+        //this is not working because these 2 lines are loading before the categories are found
+        console.log("Percent is " + CalculateSumOfArray(allAveragesTimesTheirWorth))
+        return CalculateSumOfArray(allAveragesTimesTheirWorth);
+    })
+    
+}
+
+function CalculateSumOfArray(_array){
+    var sum = 0;
+    for(var i = 0; i < _array.length; i++)
+        sum += _array[i]
+
+    return sum;
+}
+
+function CalculateAverageOfArray(_array){
+    console.log("array recieved: " + _array);
+    var total = 0;
+
+    for(var i = 0; i < _array.length; i++)
+        total+= _array[i]
+    
+    total = total/_array.length
+    console.log("total: " + total)
+    return total;
 }

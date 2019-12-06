@@ -3,7 +3,7 @@
 var localStrategy = require("passport-local"),
     passport = require("passport"),
     express = require("express"),
-    router = express.Router(),
+    router = express.Router()
 
 //Gives this file access to the user model
 var User = require("../models/user");
