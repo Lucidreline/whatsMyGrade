@@ -1,8 +1,10 @@
-const express = require("express"),
+//Brings in the express package
+var express = require("express"),
+    //Gets Express's router, Just like how we used the variable name app insode of app.js
     router = express.Router();
 
 //loads in the course and Grade model.
-let Course = require("../models/course"),
+var Course = require("../models/course"),
     Grade = require("../models/grade");
 
 //Index page, lists all the courses created by the logged in user
@@ -20,21 +22,23 @@ router.get("/courses", isLoggedIn, async (req, res)=>{
     })
 })
 
+//Renders the form to create a new course
 router.get("/courses/new", isLoggedIn, (req, res)=> res.render("course/new"))
 
-
+//Recieves the data that was entered in the 'New Course' form
 router.post("/courses/new", isLoggedIn, (req, res)=>{
+    //creates the course using the forms data
     Course.create(req.body.course, (err, createdCourse)=>{
         if(err){
             console.log("Error creating: " + req.body.course);
             res.redirect("/courses");
             return;
         }
-        
         createdCourse.author = req.user;
         req.user.courses.push(createdCourse);
-        //Here im saving both the user and course. I could use async here probably but for now this is a quick fix
-        //i didnt error check because im a savage
+
+        //Here im saving both the user and course. I placed the redirect inside of the 
+        // nested call back so that the app wont redirect before both the course and user are saved
         createdCourse.save((error, savedCourse)=>{
             req.user.save((errors, saveduser)=>res.redirect("/courses")) 
         })
@@ -61,15 +65,17 @@ router.get("/courses/:id", isLoggedIn, (req, res)=>{
             }
             res.render("course/show", {course: foundCourse, grades: foundGrades});
         })
-        
     })
 })
 
 
-
+//Allows other files to use the routes in this file
+// I will only use it in app.js
 module.exports = router;
 
+//A middleware that goes on routes that I only want LOGGED IN users to enter.
 function isLoggedIn(req, res, next){
+    //If the user is not logged in, they will be redirected to the login in page
     if(req.isAuthenticated())
         return next();
     else

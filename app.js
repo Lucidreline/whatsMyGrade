@@ -1,5 +1,5 @@
 //The app's dependencies... we are just requiring all of the dependancies
-const passportLocalMongoose = require("passport-local-mongoose"),
+var passportLocalMongoose = require("passport-local-mongoose"),
     methodOverride = require("method-override"),
     localStrategy = require("passport-local"),
     bodyParser = require("body-parser"),
