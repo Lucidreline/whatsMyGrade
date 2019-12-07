@@ -155,29 +155,29 @@ function CalculateCoursePercentage (_course){
 }
 
 async function SaveObjectsToDataBaseAndRedirect(_objectsToSave, _res, _redirectString){
-    //takes in an array
-    await SaveObjectsToDatabase(_objectsToSave);
-    console.log("After")
-    _res.redirect(_redirectString);
+    //takes in an array of objects to save. You can enter as many as 4 objects, if you enter less then 4 won't cause an error
+    Promise.all([SaveObjectToDatabase(_objectsToSave[0]), SaveObjectToDatabase(_objectsToSave[1]), SaveObjectToDatabase(_objectsToSave[2]), SaveObjectToDatabase(_objectsToSave[3])])
+    //Catches any errors we get if something is not saved
+    .catch((promisesError)=> _res.redirect(_redirectString))
+    //This will happen AFTER
+    .then((values)=> _res.redirect(_redirectString))
 }
 
-
-
-function SaveObjectsToDatabase(_objects){
-    console.log("What we are getting in: " + _objects + "\n");
-    return new Promise((resolve, reject)=>{
-        _objects.forEach((object)=>{
-            console.log("Looking at " + object.name)
-            object.save((errorSavingObject, savedObject)=>{
-                if(errorSavingObject){
-                    reject("Could not save an object");
-                }
-                else{
-                    console.log("Successfully saved " + object.name);
-                }
+function SaveObjectToDatabase(_object){
+    //Only run this code if there is an object here to save
+    if(_object){
+        //creates a promise in order to allow all objects to save before the code moves on
+        return new Promise((resolve, reject)=>{
+            //Saves the currently saved object
+            _object.save((errorSavingObject, savedObject)=>{
+                //call back function for the saved object. Stops the code if the object wasn't successfuly saved
+                if(errorSavingObject)
+                    reject(errorSavingObject);
+                else
+                    resolve();
+                    //The line above resolves the promise if there was no errors
             })
         })
-        resolve();
-    })
+    }
 }
 
