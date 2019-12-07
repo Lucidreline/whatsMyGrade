@@ -19,6 +19,15 @@ router.get("/courses/:id/grade/new", isLoggedIn, (req, res)=> {
             res.redirect("/courses");
             return;
         }
+
+
+
+
+
+
+
+
+
         //Finds a list of Categories that are associated with the course that was just found
         Category.find({course: foundCourse._id}, (foundCategoryError, foundCategories)=>{
             if(foundCategoryError){
@@ -58,6 +67,8 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res)=>{
                     //add the grade percentage:
                     createdGrade.percentage = (createdGrade.pointsRecieved / createdGrade.possiblePoints) * 100;
     
+                    
+
                     //next we check if the user wants a new category
                     if(req.body.exsistingCategory.name == "New"){
                         //creating a new category
@@ -79,19 +90,18 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res)=>{
                             //and we push the new category into the courses list of categories
                             foundCourse.categories.push(createdCategory);
 
-                            
+                            SaveObjectsToDataBaseAndRedirect([foundCourse, createdCategory, createdGrade], res, "/courses/" + foundCourse._id)
 
-                            //we save all 3 (category, grade, and course)
-                            foundCourse.save((err, savedCourse)=>{
-                                //The redirect is in the nested call backs so that it won't redirect until the category, grade, and course is saved.
-                                createdGrade.save((error, savedGrade)=>{
-                                    if(error) console.log(error)
-                                    createdCategory.save((ERROR, savedGrade)=>{
-                                        CalculateCoursePercentage(foundCourse)
-                                        res.redirect("/courses/" + foundCourse._id)
-                                    });
-                                });
-                            });
+                            // //we save all 3 (category, grade, and course)
+                            // foundCourse.save((err, savedCourse)=>{
+                            //     //The redirect is in the nested call backs so that it won't redirect until the category, grade, and course is saved.
+                            //     createdGrade.save((error, savedGrade)=>{
+                            //         if(error) console.log(error)
+                            //         createdCategory.save((ERROR, savedGrade)=>{
+                            //             res.redirect("/courses/" + foundCourse._id)
+                            //         });
+                            //     });
+                            // });
                         })
                     }else{
                         //if we are using an pre-exsisting category
@@ -108,14 +118,17 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res)=>{
                             foundCategory.gradesAssociatedWith.push(createdGrade);
                             //we put the pre-exsisting category into the grade
                             createdGrade.category = foundCategory;
+
+                            SaveObjectsToDataBaseAndRedirect([foundCourse, foundCategory, createdGrade], res, "/courses/" + foundCourse._id)
+
                             //save the grade, course, and course
-                            foundCourse.save((err, savedCourse)=>{
-                                createdGrade.save((error, savedGrade)=>{
-                                    foundCategory.save((ERROR, savedGrade)=>{
-                                        res.redirect("/courses/" + foundCourse._id);
-                                    })
-                                });
-                            });
+                            // foundCourse.save((err, savedCourse)=>{
+                            //     createdGrade.save((error, savedGrade)=>{
+                            //         foundCategory.save((ERROR, savedGrade)=>{
+                            //             res.redirect("/courses/" + foundCourse._id);
+                            //         })
+                            //     });
+                            // });
                         })
                     } 
                 }
@@ -137,46 +150,34 @@ function isLoggedIn(req, res, next){
         res.redirect("/user/login");
 }
 
-
 function CalculateCoursePercentage (_course){
-    var tempGradeArray = [],
-        allAveragesTimesTheirWorth = [];
+   
+}
 
-    //Loops through all of the courses categories IDs    
-    _course.categories.forEach((categoryID)=>{
-        //Finds a category by the ID
-        Category.findOne({_id: categoryID, course: _course._id}, (errorFindingCategories, foundCategory)=>{
-            foundCategory.gradesAssociatedWith.forEach((gradeID)=>{
-                Grade.findById(gradeID, (foundGradeError, foundGrade)=>{
-                    tempGradeArray.push(foundGrade.percentage / 100);
-                })
+async function SaveObjectsToDataBaseAndRedirect(_objectsToSave, _res, _redirectString){
+    //takes in an array
+    await SaveObjectsToDatabase(_objectsToSave);
+    console.log("After")
+    _res.redirect(_redirectString);
+}
+
+
+
+function SaveObjectsToDatabase(_objects){
+    console.log("What we are getting in: " + _objects + "\n");
+    return new Promise((resolve, reject)=>{
+        _objects.forEach((object)=>{
+            console.log("Looking at " + object.name)
+            object.save((errorSavingObject, savedObject)=>{
+                if(errorSavingObject){
+                    reject("Could not save an object");
+                }
+                else{
+                    console.log("Successfully saved " + object.name);
+                }
             })
-            allAveragesTimesTheirWorth.push(CalculateAverageOfArray(tempGradeArray) * foundCategory.percentWorth);
-            tempGradeArray = [];
         })
-        //this is not working because these 2 lines are loading before the categories are found
-        console.log("Percent is " + CalculateSumOfArray(allAveragesTimesTheirWorth))
-        return CalculateSumOfArray(allAveragesTimesTheirWorth);
+        resolve();
     })
-    
 }
 
-function CalculateSumOfArray(_array){
-    var sum = 0;
-    for(var i = 0; i < _array.length; i++)
-        sum += _array[i]
-
-    return sum;
-}
-
-function CalculateAverageOfArray(_array){
-    console.log("array recieved: " + _array);
-    var total = 0;
-
-    for(var i = 0; i < _array.length; i++)
-        total+= _array[i]
-    
-    total = total/_array.length
-    console.log("total: " + total)
-    return total;
-}
