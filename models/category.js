@@ -4,6 +4,7 @@ var mongoose = require("mongoose");
 //Structures the data that categories will have
 var categorySchema = new mongoose.Schema({
     name: String,
+    color: String,
 
     //This category is X% of your total grade
     percentWorth: Number,

@@ -15,6 +15,8 @@ var gradeSchema = new mongoose.Schema({
     possiblePoints: Number,
     percentWorth: Number,
     percentage: Number,
+    coursePercentAfterThisGradeIsadded: Number,
+    categoryColor: String,
     
     // The course that the grade belongs to.
     course: {

@@ -35,6 +35,7 @@ router.post("/courses/new", isLoggedIn, (req, res)=>{
             return;
         }
         createdCourse.author = req.user;
+        createdCourse.percentage = 0;
         req.user.courses.push(createdCourse);
 
         //Here im saving both the user and course. I placed the redirect inside of the 

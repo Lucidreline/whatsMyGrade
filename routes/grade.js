@@ -85,7 +85,9 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res) => {
                             //and we push the new category into the courses list of categories
                             foundCourse.categories.push(createdCategory);
 
-                            SaveObjectsToDataBaseAndRedirect([foundCourse, createdCategory, createdGrade], res, "/courses/" + foundCourse._id)
+                            createdGrade.categoryColor = createdCategory.color;
+
+                            SaveObjectsToDataBaseAndRedirect([foundCourse, createdCategory, createdGrade], res, "/courses/" + foundCourse._id, createdGrade)
 
                             // //we save all 3 (category, grade, and course)
                             // foundCourse.save((err, savedCourse)=>{
@@ -113,9 +115,13 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res) => {
                             foundCategory.gradesAssociatedWith.push(createdGrade);
                             //we put the pre-exsisting category into the grade
                             createdGrade.category = foundCategory;
+
+
                             createdGrade.percentWorth = foundCategory.percentWorth
 
-                            SaveObjectsToDataBaseAndRedirect([foundCourse, foundCategory, createdGrade], res, "/courses/" + foundCourse._id)
+                            createdGrade.categoryColor = foundCategory.color;
+
+                            SaveObjectsToDataBaseAndRedirect([foundCourse, foundCategory, createdGrade], res, "/courses/" + foundCourse._id, createdGrade)
 
                             //save the grade, course, and course
                             // foundCourse.save((err, savedCourse)=>{
@@ -212,7 +218,7 @@ function averageOfArray(_arr){
     return sum/_arr.length;
 }
 
-async function SaveObjectsToDataBaseAndRedirect(_objectsToSave, _res, _redirectString) {
+async function SaveObjectsToDataBaseAndRedirect(_objectsToSave, _res, _redirectString, _currentGrade) {
     //takes in an array of objects to save. You can enter as many as 4 objects, if you enter less then 4 won't cause an error 
     Promise.all([SaveObjectToDatabase(_objectsToSave[0]), SaveObjectToDatabase(_objectsToSave[1]), SaveObjectToDatabase(_objectsToSave[2]), SaveObjectToDatabase(_objectsToSave[3])])
         //Catches any errors we get if something is not saved
@@ -221,11 +227,15 @@ async function SaveObjectsToDataBaseAndRedirect(_objectsToSave, _res, _redirectS
         .then(async(values)=>{
             console.log("This is the redirection!");
             _objectsToSave[0].percentage = await CalculateCoursePercentage(_objectsToSave[0])
+            _currentGrade.coursePercentAfterThisGradeIsadded = await CalculateCoursePercentage(_objectsToSave[0])
             _objectsToSave[0].save((resaveCourseErr, savedCourse)=>{
-                if(resaveCourseErr){
-                    _res.redirect("/");
-                }
-                _res.redirect(_redirectString)
+                _currentGrade.save((resavingCurrentGradeError, resavedGrade)=>{
+                    if(resaveCourseErr){
+                        _res.redirect("/");
+                    }
+                    _res.redirect(_redirectString)
+                })
+                
             });   
         })
 }
