@@ -13,6 +13,7 @@ var gradeSchema = new mongoose.Schema({
     pointsRecieved: Number,
     //The max ammount of points that can be recieved (not incuding extra credit)
     possiblePoints: Number,
+    percentWorth: Number,
     percentage: Number,
     
     // The course that the grade belongs to.

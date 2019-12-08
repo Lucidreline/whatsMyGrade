@@ -6,8 +6,7 @@ var courseSchema = new mongoose.Schema({
     percentage: Number,
 
     //list of categories that this Course contains
-    categories: [
-        {
+    categories: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category"
         }
