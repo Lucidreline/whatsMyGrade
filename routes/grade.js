@@ -139,6 +139,111 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res) => {
     })
 })
 
+
+//Grade EDIT - - - - Renders the edit form to edit a grade
+router.get("/courses/:CourseID/grade/:gradeID/edit", isLoggedIn, (req, res) => {
+    Course.findOne({ _id: req.params.CourseID }, (foundCourseError, foundCourse) => {
+        if (foundCourseError) {
+            console.log("Was not able to find course!");
+            res.redirect("/courses");
+            return;
+        }
+
+
+        //Finds a list of Categories that are associated with the course that was just found
+        Category.find({ course: foundCourse._id }, (foundCategoryError, foundCategories) => {
+            if (foundCategoryError) {
+                console.log("error while finding categories");
+                res.redirect("/courses");
+                return;
+            }
+            Grade.findById(req.params.gradeID, (gradeFindingError, foundGrade) => {
+                if (gradeFindingError) {
+                    console.log("error while finding grade to edit");
+                    res.redirect("/courses");
+                    return;
+                }
+                res.render("grade/edit", { course: foundCourse, categories: foundCategories, grade: foundGrade });
+            })
+
+        })
+
+    });
+})
+
+//GRADE EDIT - - - - Processes the information from the 'Grade Edit' form
+router.put("/courses/:CourseID/grade/:gradeID/edit", (req, res) => {
+
+    Grade.findByIdAndUpdate(req.params.gradeID, req.body.grade, (errorUpdatingGrade, updatedGrade) => {
+        Course.findById(req.params.CourseID, (errorFindingCourse, foundCourse) => {
+
+            //Pushes the grade into the course's grade list
+            foundCourse.grades.push(updatedGrade);
+
+            //adds the course's id to the grade
+            updatedGrade.course = foundCourse;
+
+            //add the grade percentage:
+            updatedGrade.percentage = (updatedGrade.pointsRecieved / updatedGrade.possiblePoints) * 100;
+
+
+            console.log("here is the course I found: "+ foundCourse.name)
+            if (errorFindingCourse) {
+                console.log("Could not cfind course")
+                res.redirect("/courses");
+                return
+            }
+            if (req.body.exsistingCategory.name == "New") {
+                Category.create(req.body.newCategory, (createdCategoryError, createdCategory) => {
+                    if (createdCategoryError) {
+                        console.log("Could not create category")
+                        res.redirect("/courses/" + foundCourse._id);
+                        return
+                    }
+                    //we give the new category a course ID to stay in
+                    createdCategory.course = foundCourse;
+
+                    //Push the newly created grade's ID into the categories list of grades
+                    createdCategory.gradesAssociatedWith.push(updatedGrade);
+
+                    //We give the new grade the category
+                    updatedGrade.category = createdCategory;
+
+                    updatedGrade.percentWorth = createdCategory.percentWorth;
+
+                    //and we push the new category into the courses list of categories
+                    foundCourse.categories.push(createdCategory);
+
+                    updatedGrade.categoryColor = createdCategory.color;
+
+                    SaveObjectsToDataBaseAndRedirect([foundCourse, createdCategory, updatedGrade], res, "/courses/" + foundCourse._id)
+                })
+            } else {
+                //we recieve the pre-exsisting category by looking it up using BOTH the name and course
+                Category.findOne({ name: req.body.exsistingCategory.name, course: foundCourse._id }, (FoundCategoryError, foundCategory) => {
+                    if (FoundCategoryError) {
+                        console.log("Could not find category")
+                        res.redirect("/courses/" + foundCourse._id);
+                        return
+                    }
+
+                    //We put the newly created grade in the category's list of grades
+                    foundCategory.gradesAssociatedWith.push(updatedGrade);
+                    //we put the pre-exsisting category into the grade
+                    updatedGrade.category = foundCategory;
+
+
+                    updatedGrade.percentWorth = foundCategory.percentWorth
+
+                    updatedGrade.categoryColor = foundCategory.color;
+
+                    SaveObjectsToDataBaseAndRedirect([foundCourse, foundCategory, updatedGrade], res, "/courses/" + foundCourse._id)
+                })
+            } 
+        })
+    })
+})
+
 //Allows other files to use the routes in this file
 // I will only use it in app.js
 module.exports = router;
@@ -170,7 +275,7 @@ function CalculateCoursePercentage(_course) {
 
             _course.categories.forEach((categoryID) => {
                 //for some reason the first grade of the course nis never read the first time so this will temp fix that
-                if(foundGrades.length == 1){
+                if (foundGrades.length == 1) {
                     currentGradesPercentageWorth = foundGrades[0].percentWorth / 100;
                     gradePercentsForCategory.push(foundGrades[0].percentage / 100)
                 }
@@ -182,7 +287,7 @@ function CalculateCoursePercentage(_course) {
                         console.log(grade)
                     }
                 })
-                categoriesAverageScore = averageOfArray(gradePercentsForCategory)  * currentGradesPercentageWorth;
+                categoriesAverageScore = averageOfArray(gradePercentsForCategory) * currentGradesPercentageWorth;
                 allCategoryPercentages.push(categoriesAverageScore);
                 allPercentWorths.push(currentGradesPercentageWorth);
 
@@ -196,47 +301,47 @@ function CalculateCoursePercentage(_course) {
             var percent = (sumOfArray(allCategoryPercentages) / sumOfArray(allPercentWorths) * 100);
             percent = percent.toFixed(2);
             console.log("YOUR PERCENT: " + percent + " %");
-            
+
             resolve(percent);
         })
     })
 
 }
 
-function sumOfArray(_arr){
+function sumOfArray(_arr) {
     var sum = 0;
-    for(var i = 0; i < _arr.length; i++)
+    for (var i = 0; i < _arr.length; i++)
         sum += _arr[i];
 
-    return sum  ;
+    return sum;
 }
-function averageOfArray(_arr){
+function averageOfArray(_arr) {
     var sum = 0;
-    for(var i = 0; i < _arr.length; i++)
+    for (var i = 0; i < _arr.length; i++)
         sum += _arr[i];
 
-    return sum/_arr.length;
+    return sum / _arr.length;
 }
 
-async function SaveObjectsToDataBaseAndRedirect(_objectsToSave, _res, _redirectString, _currentGrade) {
+async function SaveObjectsToDataBaseAndRedirect(_objectsToSave, _res, _redirectString) {
     //takes in an array of objects to save. You can enter as many as 4 objects, if you enter less then 4 won't cause an error 
     Promise.all([SaveObjectToDatabase(_objectsToSave[0]), SaveObjectToDatabase(_objectsToSave[1]), SaveObjectToDatabase(_objectsToSave[2]), SaveObjectToDatabase(_objectsToSave[3])])
         //Catches any errors we get if something is not saved
         .catch((promisesError) => _res.redirect(_redirectString))
         //This will happen AFTER
-        .then(async(values)=>{
+        .then(async (values) => {
             console.log("This is the redirection!");
             _objectsToSave[0].percentage = await CalculateCoursePercentage(_objectsToSave[0])
-            _currentGrade.coursePercentAfterThisGradeIsadded = await CalculateCoursePercentage(_objectsToSave[0])
-            _objectsToSave[0].save((resaveCourseErr, savedCourse)=>{
-                _currentGrade.save((resavingCurrentGradeError, resavedGrade)=>{
-                    if(resaveCourseErr){
+            _objectsToSave[2].coursePercentAfterThisGradeIsadded = await CalculateCoursePercentage(_objectsToSave[0])
+            _objectsToSave[0].save((resaveCourseErr, savedCourse) => {
+                _objectsToSave[2].save((resavingCurrentGradeError, resavedGrade) => {
+                    if (resaveCourseErr) {
                         _res.redirect("/");
                     }
                     _res.redirect(_redirectString)
                 })
-                
-            });   
+
+            });
         })
 }
 
@@ -256,4 +361,8 @@ function SaveObjectToDatabase(_object) {
             })
         })
     }
+}
+
+function refreshGradeAfterAddedPercentages(){
+    
 }

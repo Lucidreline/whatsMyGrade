@@ -16,6 +16,10 @@ grades:
     <p>
         <%= grade.name %>
     </p>
+
+    <a href="/courses/<%= course._id %>/grade/<%= grade._id %>/edit">
+        edit
+    </a>
 <% }) %>
 
 
@@ -40,7 +44,7 @@ let GradeGraph = new Chart(graph, {
 
         datasets: [
             {
-                label: "Score Percentage",
+                label: "Course Percentage",
                 data: getField(gradesList, "coursePercentAfterThisGradeIsadded"),
                 type: "line",
                 backgroundColor: "rgba(0,0,0,0)",
@@ -51,7 +55,7 @@ let GradeGraph = new Chart(graph, {
             },
             {
                 type: "bar",
-                label: "Course Percentage",
+                label: "Grade Percentage",
                 data: getField(gradesList, "percentage"),
                 backgroundColor: getField(gradesList, "categoryColor"),
                 borderWidth: 1.5,
