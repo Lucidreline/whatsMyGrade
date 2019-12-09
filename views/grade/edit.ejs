@@ -35,4 +35,12 @@
     <button>Submit</button>
 </form>
 
+<br>
+
+<form action="/courses/<%= course._id %>/grade/<%= grade._id %>/delete?_method=DELETE" method="POST">
+    <button>Delete</button>
+</form>
+
+
+
 <% include ../partials/footer %>

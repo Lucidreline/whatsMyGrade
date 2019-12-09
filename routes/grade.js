@@ -235,6 +235,31 @@ router.put("/courses/:CourseID/grade/:gradeID/edit", (req, res) => {
     })
 })
 
+//Grade Delete - - - - Removes the current grade from the database along with its ID from the course and category
+router.delete("/courses/:CourseID/grade/:gradeID/delete", (req, res)=>{
+    try{
+        Grade.findByIdAndRemove(req.params.gradeID, (errorDestroyingGrade, destroyedGrade)=>{
+            Course.findById(req.params.CourseID, (errorFindingCourse, foundCourse)=>{
+                for(var i = 0; i < foundCourse.grades.length; i++) {
+                    if(destroyedGrade._id.toString() == foundCourse.grades[i].toString())
+                        foundCourse.grades.splice(i, 1);
+                }
+    
+                Category.findById(destroyedGrade.category, async (errorFindingCategory, foundCategory)=>{
+                    for(var i = 0; i < foundCategory.gradesAssociatedWith.length; i++){
+                        if(destroyedGrade._id.toString() == foundCategory.gradesAssociatedWith[i].toString())
+                            foundCategory.gradesAssociatedWith.splice(i, 1);
+                    }
+                    SaveObjectsToDataBaseAndRedirect([foundCourse, foundCategory], res, "/courses/" + req.params.CourseID)
+                })
+            })
+        })
+    }catch(error){
+        console.log("Error: " + error);
+        res.redirect("/courses/" + req.params.courseID);
+    }    
+})
+
 //Allows other files to use the routes in this file
 // I will only use it in app.js
 module.exports = router;
