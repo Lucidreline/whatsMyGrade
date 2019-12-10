@@ -6,10 +6,6 @@ var categorySchema = new mongoose.Schema({
     name: String,
     color: String,
 
-    //These 2 wont actually save data, but they will help calculate the coursePercentage
-    tempGradePercentagesHolder: [Number],
-    tempCalculatedePercentageHolder: Number,
-
     //This category is X% of your total grade
     percentWorth: Number,
     course: {

@@ -223,12 +223,12 @@ router.put("/courses/:CourseID/grade/:gradeID/edit", (req, res) => {
                     updatedGrade.categoryColor = foundCategory.color;
 
                     updatedGrade.percentage = (updatedGrade.pointsRecieved / updatedGrade.possiblePoints) * 100;
-                    updatedGrade.save((x, y)=>{
+                    updatedGrade.save((x, y) => {
                         SaveObjectsToDataBaseAndRedirect([foundCourse, foundCategory, updatedGrade], res, "/courses/" + foundCourse._id)
                     })
-                    
 
-                    
+
+
                 })
             }
         })
@@ -236,71 +236,49 @@ router.put("/courses/:CourseID/grade/:gradeID/edit", (req, res) => {
 })
 
 //Grade Delete - - - - Removes the current grade from the database along with its ID from the course and category
-router.delete("/courses/:CourseID/grade/:gradeID/delete", (req, res)=>{
-    try{
-        Grade.findByIdAndRemove(req.params.gradeID, (errorDestroyingGrade, destroyedGrade)=>{
-            Course.findById(req.params.CourseID, (errorFindingCourse, foundCourse)=>{
-                for(var i = 0; i < foundCourse.grades.length; i++) {
-                    if(destroyedGrade._id.toString() == foundCourse.grades[i].toString())
+router.delete("/courses/:CourseID/grade/:gradeID/delete", (req, res) => {
+    try {
+        Grade.findByIdAndRemove(req.params.gradeID, (errorDestroyingGrade, destroyedGrade) => {
+            Course.findById(req.params.CourseID, (errorFindingCourse, foundCourse) => {
+                for (var i = 0; i < foundCourse.grades.length; i++) {
+                    if (destroyedGrade._id.toString() == foundCourse.grades[i].toString())
                         foundCourse.grades.splice(i, 1);
                 }
-    
-                Category.findById(destroyedGrade.category, async (errorFindingCategory, foundCategory)=>{
-                    for(var i = 0; i < foundCategory.gradesAssociatedWith.length; i++){
-                        if(destroyedGrade._id.toString() == foundCategory.gradesAssociatedWith[i].toString())
+
+                Category.findById(destroyedGrade.category, async (errorFindingCategory, foundCategory) => {
+                    for (var i = 0; i < foundCategory.gradesAssociatedWith.length; i++) {
+                        if (destroyedGrade._id.toString() == foundCategory.gradesAssociatedWith[i].toString())
                             foundCategory.gradesAssociatedWith.splice(i, 1);
                     }
                     SaveObjectsToDataBaseAndRedirect([foundCourse, foundCategory], res, "/courses/" + req.params.CourseID)
                 })
             })
         })
-    }catch(error){
+    } catch (error) {
         console.log("Error: " + error);
         res.redirect("/courses/" + req.params.courseID);
-    }    
+    }
 })
 
 //Allows other files to use the routes in this file
 // I will only use it in app.js
 module.exports = router;
 
-//A middleware that goes on routes that I only want LOGGED IN users to enter.
-function isLoggedIn(req, res, next) {
-    //If the user is not logged in, they will be redirected to the login in page
-    if (req.isAuthenticated())
-        return next();
-    else
-        res.redirect("/user/login");
-}
-
-function sumOfArray(_arr) {
-    var sum = 0;
-    for (var i = 0; i < _arr.length; i++)
-        sum += _arr[i];
-
-    return sum;
-}
-function averageOfArray(_arr) {
-    var sum = 0;
-    for (var i = 0; i < _arr.length; i++)
-        sum += _arr[i];
-
-    return sum / _arr.length;
-}
+// ======== FUNCTIONS =========
 
 async function SaveObjectsToDataBaseAndRedirect(_objectsToSave, _res, _redirectString) {
     //takes in an array of objects to save. You can enter as many as 4 objects, if you enter less then 4 won't cause an error 
     Promise.all([SaveObjectToDatabase(_objectsToSave[0]), SaveObjectToDatabase(_objectsToSave[1]), SaveObjectToDatabase(_objectsToSave[2]), SaveObjectToDatabase(_objectsToSave[3])])
-        //Catches any errors we get if something is not saved
-        .catch((promisesError) => _res.redirect(_redirectString))
-        //This will happen AFTER
+    //Catches any errors we get if something is not saved
+    .catch((promisesError) => _res.redirect(_redirectString))
+    //This will happen AFTER
         .then(async (values) => {
             await refreshGradesAfterAddedPercentagesValue(_objectsToSave[0]);
-
+            
             _res.redirect(_redirectString)
         })
-}
-
+    }
+    
 function SaveObjectToDatabase(_object) {
     //Only run this code if there is an object here to save
     if (_object) {
@@ -311,38 +289,46 @@ function SaveObjectToDatabase(_object) {
                 //call back function for the saved object. Stops the code if the object wasn't successfuly saved
                 if (errorSavingObject)
                     reject(errorSavingObject);
-                else
+                    else
                     resolve();
-                //The line above resolves the promise if there was no errors
-            })
+                    //The line above resolves the promise if there was no errors
+                })
         })
     }
 }
 
 function refreshGradesAfterAddedPercentagesValue(_course) {
     return new Promise((resolve, reject) => {
-        Grade.find({ course: _course._id }, async (errorFindingGrades, foundGrades) => {
-            if (errorFindingGrades)
-                reject("Coudnt find grades in the refresh");
+        try {
+                    //gets a list of all the grades in the course
 
-            else {
+            Grade.find({ course: _course._id }, async (errorFindingGrades, foundGrades) => {
+
+                //arrays that I will use to calculate the percentage
                 var listOfcalculatedPercentages = [],
                     listOfUsedCategories = [],
                     listOfPercentWorths = [],
-                    newCat;
+                    isNewCategory;
+
                 currentPercentage = 0;
 
+                //goes through every grade
                 foundGrades.forEach(async (grade) => {
-                    newCat = true;
+                    isNewCategory = true;
 
                     listOfUsedCategories.forEach((usedCategory) => {
+                        //checks to see if a category matches the grade
                         if (usedCategory.id.toString() == grade.category.toString()) {
-                            newCat = false
+                            //lets the app know that I will not be creating a new category.
+                            isNewCategory = false
+                            //Adds this grades score percentage to the list of scores in this category
                             usedCategory.percents.push(grade.percentage);
                         }
                     })
 
-                    if (newCat) {
+                    //this happens if the courses has a category that has not been seen in this loop
+                    if (isNewCategory) {
+                        //since this category has not been seen before, it jus pushes a new category in the list initializing the object with the category, percentage worth, and a 1 element list with the grades score percentage 
                         listOfUsedCategories.push({
                             id: grade.category,
                             worth: grade.percentWorth,
@@ -350,26 +336,58 @@ function refreshGradesAfterAddedPercentagesValue(_course) {
                         })
                     }
 
-
+                    //Goes through the list of categories that have already been used by grades so far and calculates the average grade per category and multiplies them by how much they are worth
                     listOfUsedCategories.forEach((usedCategory) => {
                         listOfcalculatedPercentages.push((averageOfArray(usedCategory.percents)) * (usedCategory.worth))
                         listOfPercentWorths.push(usedCategory.worth);
                     })
 
-
+                    //Calculates the grade at this point in time. Each time this is looped through, it calculates the percent taking to account one more grade then it previously did until it reaches the last grade
                     currentPercentage = (sumOfArray(listOfcalculatedPercentages) / (sumOfArray(listOfPercentWorths)))
-                    currentPercentage = (sumOfArray(listOfcalculatedPercentages) / (sumOfArray(listOfPercentWorths)))
+                    
+                    //empties the list so things wont be repeated. 
+                    //the only thing that is not dumped is the list of new categories
                     listOfcalculatedPercentages = [];
                     listOfPercentWorths = [];
                     grade.coursePercentAfterThisGradeIsadded = currentPercentage;
                     await SaveObjectToDatabase(grade);
 
                 })
+                //this gives the course a percentage based on ALL the enabled grades in it
+                    //Enabled grades will be part of a future feature where some grades can be disabled due to special cases such as the professor drops the lowest 3 quizes etc.
                 _course.percentage = currentPercentage;
                 await SaveObjectToDatabase(_course);
                 resolve();
-            }
-        })
 
+            })
+        }
+        catch (caughtError) {
+            reject(caughtError);
+        }
     })
+}
+
+function sumOfArray(_arr) {
+    var sum = 0;
+    for (var i = 0; i < _arr.length; i++)
+    sum += _arr[i];
+    
+    return sum;
+}
+
+function averageOfArray(_arr) {
+    var sum = 0;
+    for (var i = 0; i < _arr.length; i++)
+    sum += _arr[i];
+    
+    return sum / _arr.length;
+}
+
+//A middleware that goes on routes that I only want LOGGED IN users to enter.
+function isLoggedIn(req, res, next) {
+    //If the user is not logged in, they will be redirected to the login in page
+    if (req.isAuthenticated())
+        return next();
+    else
+        res.redirect("/user/login");
 }
