@@ -1,9 +1,11 @@
 <% include ../partials/header %>
 
-<% if (loggedInUser){ %>
-    <h1>Welcome <%= loggedInUser.username %></h1>
-<%} %>
-
-<h1>Home page in the house!</h1>
+<section class="hero">
+    <h2>Track Your Grades.</h2>
+    <h3>Calculate your grade with visuals</h3>
+    <button>
+        <a href="/user/login">Try It Out!</a>
+    </button>
+</section>
 
 <% include ../partials/footer %>
