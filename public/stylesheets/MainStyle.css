@@ -69,12 +69,11 @@ nav ul{
     flex: 2 1 40rem;
     font-family: 'Pattaya', sans-serif;
     font-weight: 400;
-    
 }
 
 .hero{
     min-height: 90vh;
-    background: linear-gradient(rgba(0, 0, 0, 0.609),transparent),url('../Photos/Backgrounds/Backpack.jpg');
+    background: linear-gradient(rgba(0, 0, 0, 0.753),transparent),url('../Photos/Backgrounds/Backpack.jpg');
     background-repeat: no-repeat;
     background-size: cover;
     background-position: center;
@@ -84,10 +83,60 @@ nav ul{
     justify-content: center;
     align-items: center;
     text-align: center;
+    animation: zoomAnim 120.5s infinite ease-in-out alternate-reverse;
 }
 .hero h3{
     padding: 2.5rem;
 }
+
+.hero h2, .hero h3{
+    text-shadow: -1px 1px 2rem black, -1px 1px 1rem black;
+}
+
+/* Forms */
+#user-forms{
+    min-height: 90vh;
+    background: linear-gradient(rgba(0, 0, 0, 0.753),transparent), url('../Photos/Backgrounds/College.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    flex-wrap: wrap;
+}
+
+.form-wrapper{
+    background: rgba(0, 0, 0, 0.404);
+    color: white;
+    border-radius: 20px;
+    flex-basis: 60rem;
+    margin: 4rem 2rem;
+}
+
+.form-head{
+    text-align: center;
+    padding: 4rem;
+}
+
+.name-form, .email-form{
+    padding: 3rem;
+    text-align: center;
+}
+.form-wrapper label{
+    margin: 0rem 3rem;
+}
+.form-wrapper button{
+    width: 100%;
+    padding: 2rem;
+    margin-top: 8rem;
+    border-radius: 0px 0px 20px 20px;
+}
+
+.form-wrapper input{
+    padding: 1rem 3rem;
+}
+
 
 @media screen and (max-width:938px){
     html{
@@ -101,4 +150,11 @@ nav ul{
     }
 }
 
-
+@keyframes zoomAnim{
+    50%{
+        background-size: 200%;
+    }
+    100%{
+        background-size: 100%;
+    }
+}

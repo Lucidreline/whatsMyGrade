@@ -40,7 +40,7 @@ router.post("/user/register", (req, res)=>{
 //Takes in the data from the login form
 router.post("/user/login", passport.authenticate("local", {
     //If the password matches, the user is redirected to home, else the login page is refreshed
-    successRedirect: "/",
+    successRedirect: "/courses",
     failureRedirect: "/user/login"
 }));
 //==========================================

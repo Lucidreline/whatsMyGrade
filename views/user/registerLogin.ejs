@@ -1,19 +1,46 @@
 <% include ../partials/header %>
 
-<h1>Log in or register my man!</h1>
-
-<form action="/user/register" method="POST">
-    <input required type="text" name="firstName" placeholder="First Name">
-    <input required type="email" name="email" placeholder="Email">
-    <input required type="text" name="username" placeholder="Username">
-    <input required type="Password" name="password" placeholder="Password">
-    <button>Submit</button>
-</form>
-
-<form action="/user/login" method="POST">
-    <input type="text" name="username" placeholder="Username">
-    <input type="Password" name="password" placeholder="Password">
-    <button>login</button>
-</form>
+<section id="user-forms">
+    <div class="form-wrapper">
+        <header class='form-head'>
+            <h2>Log In</h2>
+        </header>
+        <form action="/user/login" method="POST">
+            <div class="name-form">
+                <label for="username">Username:</label>
+                <input type="text" name="username" placeholder="Username" required>
+            </div>
+            <div class="email-form">
+                <label for="password">Password</label>
+                <input type="Password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    <div class="form-wrapper">
+        <header class='form-head'>
+            <h2>Sign Up</h2>
+        </header>
+        <form action="/user/login" method="POST">
+            <div class="name-form">
+                <label for="name">First Name:</label>
+                <input required type="text" name="firstName" placeholder="First Name" required>
+            </div>
+            <div class="name-form">
+                <label for="email" style="margin-right: 75px;">Email: </label>
+                <input required type="email" name="email" placeholder="Email" required>
+            </div>
+            <div class="name-form">
+                <label for="username">Username:</label>
+                <input required type="text" name="username" placeholder="Username" required>
+            </div>
+            <div class="email-form">
+                <label for="password">Password:</label>
+                <input required type="Password" name="password" placeholder="Password" required>
+            </div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+</section>
 
 <% include ../partials/footer %>
