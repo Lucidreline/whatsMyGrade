@@ -70,6 +70,46 @@ router.get("/courses/:id", isLoggedIn, (req, res)=>{
     })
 })
 
+//Renders the edit page
+router.get("/courses/:id/edit", isLoggedIn, (req, res)=>{
+    Course.findById(req.params.id, (errorFindingCourse, foundCourse)=>{
+        if(errorFindingCourse || !foundCourse){
+            console.log("Error Finding: " + foundCourse);
+            res.redirect("/courses");
+            return;
+        }
+        res.render("course/edit", {course: foundCourse})
+    })
+})
+
+//Edits the course
+router.put("/courses/:id/edit", isLoggedIn, (req,res)=>{
+    Course.findByIdAndUpdate(req.params.id, req.body.course, (errorUpdatingCourse, updatedCourse)=>{
+        if(errorUpdatingCourse){
+            console.log("Can not update course");
+            res.redirect("/courses");
+            return;
+        }
+
+        //change color in the users course color list
+        for (let i = 0; i < req.user.courseColors.length; i++) {
+            if(req.user.courseColors[i].courseID.toString() == updatedCourse._id.toString()){
+                req.user.courseColors[i].color = req.body.course.color;
+                break;
+            }            
+        }
+        req.user.save((errorSaving, savedUser)=>{
+            if(errorSaving){
+                console.log("Could not save user after updating course! :(");
+                res.redirect("/course");
+                return;
+            }
+            res.redirect("/courses/" + updatedCourse._id);
+        })
+
+    })
+})
+
 
 //Allows other files to use the routes in this file
 // I will only use it in app.js
