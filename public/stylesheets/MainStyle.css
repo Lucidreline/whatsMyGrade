@@ -129,12 +129,24 @@ nav ul{
 .form-wrapper button{
     width: 100%;
     padding: 2rem;
-    margin-top: 8rem;
+    margin-top: 3rem;
     border-radius: 0px 0px 20px 20px;
 }
 
 .form-wrapper input{
     padding: 1rem 3rem;
+}
+
+#colorViewer{
+    margin-top: 2rem;
+    border-radius: 20px;
+}
+
+@media screen and (max-width:507px){
+    #colorPickerCanvas{
+        height: 50px;
+        width: 365px;
+    }
 }
 
 

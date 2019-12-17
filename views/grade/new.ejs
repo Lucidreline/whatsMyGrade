@@ -1,6 +1,7 @@
 <% include ../partials/header %>
 
 
+
 <form action="/courses/<%= course._id %>/grade/new" method="POST">
     <input required type="text" name="grade[name]" placeholder="name">
     <input required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved">
@@ -24,6 +25,8 @@
     <p>What percentage is this worth?</p>
 
     <input type="text" name="newCategory[color]" placeholder="New Category color">
+
+    
     
     <input type="number" name="newCategory[percentWorth]" >
 

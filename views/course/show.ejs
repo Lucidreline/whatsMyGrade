@@ -1,11 +1,11 @@
 <% include ../partials/header %>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.8.0/Chart.js"></script>
 
+<!-- These just hold data that I want to transfer from the backend javascript to the front end javascript -->
 <h2 style="display:none;" id="gradesObj"><%=JSON.stringify(grades)%></h2>
-
+<p style="display:none;" id="bodyColorHolder"> <%= course.color %> </p>
 
 <%= course.name %>
-
 <%= course.percentage %> %
 
 <canvas id="gradeGraph"></canvas>
@@ -13,70 +13,68 @@
 grades:
 
 <% grades.forEach((grade)=>{ %>
-    <p>
-        <%= grade.name %>
-    </p>
+<p>
+    <%= grade.name %>
+</p>
 
-    <a href="/courses/<%= course._id %>/grade/<%= grade._id %>/edit">
-        edit
-    </a>
+<a href="/courses/<%= course._id %>/grade/<%= grade._id %>/edit">
+    edit
+</a>
 <% }) %>
 
 
 <a href="/courses/<%= course._id %>/grade/new">New grade</a>
 
 <script>
+
+    //set background color
+    colorColorHex = document.getElementById("bodyColorHolder").textContent
+    document.body.style.backgroundColor = colorColorHex;
+
+
+    //put the grades in the graph
     var gradesList = JSON.parse(document.getElementById("gradesObj").innerText);
 
-function getField(input, field){
-    var output = [];
-    input.forEach((inp)=> output.push(inp[field]))
-    return output
-}
+    function getField(input, field) {
+        var output = [];
+        input.forEach((inp) => output.push(inp[field]))
+        return output
+    }
 
-let graph = document.getElementById("gradeGraph").getContext("2d");
+    let graph = document.getElementById("gradeGraph").getContext("2d");
 
-let GradeGraph = new Chart(graph, {
-    type: "bar",
+    let GradeGraph = new Chart(graph, {
+        type: "bar",
 
-    data: {
-        labels: getField(gradesList, "name"),
+        data: {
+            labels: getField(gradesList, "name"),
 
-        datasets: [
-            {
-                label: "Course Percentage",
-                data: getField(gradesList, "coursePercentAfterThisGradeIsadded"),
-                type: "line",
-                backgroundColor: "rgba(0,0,0,0)",
-                backgroundColor: "rgba(0,0,0,0)",
-                borderWidth: 3,
-                borderColor: "#000",
-                hoverBorderWidth: 2.3
-            },
-            {
-                type: "bar",
-                label: "Grade Percentage",
-                data: getField(gradesList, "percentage"),
-                backgroundColor: getField(gradesList, "categoryColor"),
-                borderWidth: 1.5,
-                borderColor: "#777",
-                hoverBorderWidth: 2.3,
-                hoverBorderColor: "#000"
-            }
-        ]
-    },
-
-    options: {}
-})
-
-
-
-console.log(getField(grades, "name"))
-console.log(getField(grades, "percentage"))
+            datasets: [
+                {
+                    label: "Course Percentage",
+                    data: getField(gradesList, "coursePercentAfterThisGradeIsadded"),
+                    type: "line",
+                    backgroundColor: "rgba(0,0,0,0)",
+                    backgroundColor: "rgba(0,0,0,0)",
+                    borderWidth: 3,
+                    borderColor: "#000",
+                    hoverBorderWidth: 2.3
+                },
+                {
+                    type: "bar",
+                    label: "Grade Percentage",
+                    data: getField(gradesList, "percentage"),
+                    backgroundColor: getField(gradesList, "categoryColor"),
+                    borderWidth: 1.5,
+                    borderColor: "#777",
+                    hoverBorderWidth: 2.3,
+                    hoverBorderColor: "#000"
+                }
+            ]
+        },
+        options: {}
+    })
 </script> -->
 
 
 <% include ../partials/footer %>
-
-
-

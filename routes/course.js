@@ -41,7 +41,7 @@ router.post("/courses/new", isLoggedIn, (req, res)=>{
         //Here im saving both the user and course. I placed the redirect inside of the 
         // nested call back so that the app wont redirect before both the course and user are saved
         createdCourse.save((error, savedCourse)=>{
-            req.user.save((errors, saveduser)=>res.redirect("/courses")) 
+            req.user.save((errors, saveduser)=>res.redirect("/courses/" + createdCourse._id)) 
         })
     })
 })
