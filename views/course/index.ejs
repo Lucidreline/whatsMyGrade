@@ -1,15 +1,39 @@
 <% include ../partials/header %>
+<p style="display:none;" id="listOfCourseColors"><%=JSON.stringify(loggedInUser.courseColors)%></p>
+
 
 <a href="/courses/new">
     <button>
         New course
     </button>
 </a>
+<% if(loggedInUser.courseColors.length < 2){ %>
+    <h4>Add more courses for a customized background!</h4>
+<% } %>
+
 
 <% courseList.forEach((course)=>{ %>
 
-    <h1><%= course.name %></h1>
-    <a href="courses/<%= course._id %>">show</a>
+<h1><%= course.name %></h1>
+<a href="courses/<%= course._id %>">show</a>
 <% }) %>
+
+<script>
+    function getField(input, field) {
+        var output = [];
+        input.forEach((inp) => output.push(inp[field]))
+        return output
+    }
+
+    let usersCourseColors = JSON.parse(document.getElementById("listOfCourseColors").innerText)
+    let courseColors = getField(usersCourseColors, "color")
+    let colorsWithCommas = "";
+
+    courseColors.forEach((color)=>{
+        colorsWithCommas += ', ' + color;
+    })
+
+    document.body.style.background = 'linear-gradient(' + "to right" + colorsWithCommas + ')';
+</script>
 
 <% include ../partials/footer %>

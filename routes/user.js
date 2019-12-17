@@ -31,7 +31,7 @@ router.post("/user/register", (req, res)=>{
         }
         //Logs in the new user
         passport.authenticate("local")(req, res, function(){
-            res.redirect("/");
+            res.redirect("/courses");
         })
     })
 })

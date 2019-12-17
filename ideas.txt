@@ -1,0 +1,3 @@
+in the user object in the database, create a list of all the courses colors to make a cool radient of all colors
+
+create a low key form inside of the showpage to create a new grade... I dont want a seperate page just create a grade. JS will make it go from plus sign icon to a quick add grade to then a new category form

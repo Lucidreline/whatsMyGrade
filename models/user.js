@@ -15,7 +15,15 @@ var userSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "Course"
         }
-    ]
+    ],
+    courseColors: [{
+        courseID: {
+            //the Course's mongoose ID
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Course"
+        },
+        color: String
+    }]
 })
 
 

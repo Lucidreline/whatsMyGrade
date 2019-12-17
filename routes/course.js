@@ -37,6 +37,7 @@ router.post("/courses/new", isLoggedIn, (req, res)=>{
         createdCourse.author = req.user;
         createdCourse.percentage = 0;
         req.user.courses.push(createdCourse);
+        req.user.courseColors.push({courseID: createdCourse, color: createdCourse.color});
 
         //Here im saving both the user and course. I placed the redirect inside of the 
         // nested call back so that the app wont redirect before both the course and user are saved
