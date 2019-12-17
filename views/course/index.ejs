@@ -2,21 +2,42 @@
 <p style="display:none;" id="listOfCourseColors"><%=JSON.stringify(loggedInUser.courseColors)%></p>
 
 
-<a href="/courses/new">
-    <button>
-        New course
-    </button>
-</a>
-<% if(loggedInUser.courseColors.length < 2){ %>
-    <h4>Add more courses for a customized background!</h4>
-<% } %>
+<section class="course-list">
+    <header class="course-list-head">
+        <h2>My Courses</h2>
+        <% if(loggedInUser.courseColors.length < 2){ %>
+        <h3>Add more courses for a customized background!</h3>
+        <% }else{ %>
+        <h3>Keep up the good work!</h3>
+        <% } %>
+    </header>
 
+    <div class="container">
+        <a href="/courses/new">
+            <button class="add-btn">
+                +
+            </button>
+        </a>
+    </div>
+    
 
-<% courseList.forEach((course)=>{ %>
+    <div class="course-Cards">
+        <% courseList.forEach((course)=>{ %>
+        <div class="course-Card">
+            <div class="card-top" style="background-color: <%= course.color %>;">
+                <h3><%= course.name %></h3>
+            </div>
+            <h4><%= course.percentage %>%</h4>
+            <div class="course-card-footer">
+                <a href="courses/<%= course._id %>" style="border-right: 1.25px black solid;">View</a>
+                <a href="courses/<%= course._id %>/edit">Edit</a>
+            </div>
+            
+        </div>
+        <% }) %>
+    </div>
+</section>
 
-<h1><%= course.name %></h1>
-<a href="courses/<%= course._id %>">show</a>
-<% }) %>
 
 <script>
     function getField(input, field) {
@@ -29,7 +50,7 @@
     let courseColors = getField(usersCourseColors, "color")
     let colorsWithCommas = "";
 
-    courseColors.forEach((color)=>{
+    courseColors.forEach((color) => {
         colorsWithCommas += ', ' + color;
     })
 

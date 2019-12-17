@@ -28,8 +28,15 @@ grades:
 <script>
 
     //set background color
-    colorColorHex = document.getElementById("bodyColorHolder").textContent
-    document.body.style.backgroundColor = colorColorHex;
+    colorColorHex = document.getElementById("bodyColorHolder").textContent.trim();
+    document.body.style.backgroundColor = colorColorHex + "67";
+
+    let navText = document.getElementsByClassName("nav-text");
+    console.log(navText.length)
+    for(var i = 0; i < navText.length; i++){
+        navText[i].style.color = colorColorHex;
+    }
+    
 
 
     //put the grades in the graph
