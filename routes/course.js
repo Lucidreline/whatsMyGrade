@@ -4,7 +4,8 @@ var express = require("express"),
     router = express.Router();
 
 //loads in the course and Grade model.
-var Course = require("../models/course"),
+var Category = require("../models/category"),
+    Course = require("../models/course"),
     Grade = require("../models/grade");
 
 //Index page, lists all the courses created by the logged in user
@@ -90,7 +91,6 @@ router.put("/courses/:id/edit", isLoggedIn, (req,res)=>{
             res.redirect("/courses");
             return;
         }
-
         //change color in the users course color list
         for (let i = 0; i < req.user.courseColors.length; i++) {
             if(req.user.courseColors[i].courseID.toString() == updatedCourse._id.toString()){
@@ -106,7 +106,28 @@ router.put("/courses/:id/edit", isLoggedIn, (req,res)=>{
             }
             res.redirect("/courses/" + updatedCourse._id);
         })
+    })
+})
 
+router.delete("/courses/:id/delete", isLoggedIn, (req, res)=>{
+
+    Course.findByIdAndRemove(req.params.id, (errordeletingCourse, deletedCourse)=>{
+        for (let i = 0; i < req.user.courseColors.length; i++) {
+            if(req.user.courseColors[i].courseID.toString() == deletedCourse._id.toString()){
+                req.user.courseColors.splice(i, 1);
+                break;
+            }            
+        }
+
+        Grade.deleteMany({course: deletedCourse._id}, (errorFindingGrades, deletedGrades)=>{
+            Category.deleteMany({course: deletedCourse._id}, (errorDeletingCategories, deletedcategories)=>{
+                req.user.save((errorSaving, savedUser)=>{
+                    if(errorSaving)
+                        console.log("Could not save user deleting course! :(");  
+                    res.redirect("/courses/");
+                })
+            })
+        }) 
     })
 })
 

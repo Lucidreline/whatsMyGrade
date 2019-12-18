@@ -4,7 +4,7 @@
 
 <section class="course-list">
     <header class="course-list-head">
-        <h2>My Courses</h2>
+        <h2>Welcome <%= loggedInUser.firstName %>!</h2>
         <% if(loggedInUser.courseColors.length < 2){ %>
         <h3>Add more courses for a customized background!</h3>
         <% }else{ %>
@@ -14,12 +14,11 @@
 
     <div class="container">
         <a href="/courses/new">
-            <button class="add-btn">
+            <button class="circle-btn add-btn">
                 +
             </button>
         </a>
     </div>
-    
 
     <div class="course-Cards">
         <% courseList.forEach((course)=>{ %>
@@ -27,17 +26,15 @@
             <div class="card-top" style="background-color: <%= course.color %>;">
                 <h3><%= course.name %></h3>
             </div>
-            <h4><%= course.percentage %>%</h4>
+            <h4><%= course.percentage.toFixed(2) %>%</h4>
             <div class="course-card-footer">
                 <a href="courses/<%= course._id %>" style="border-right: 1.25px black solid;">View</a>
                 <a href="/courses/<%= course._id %>/edit">Edit</a>
-            </div>
-            
+            </div> 
         </div>
         <% }) %>
     </div>
 </section>
-
 
 <script>
     function getField(input, field) {
@@ -46,9 +43,9 @@
         return output
     }
 
-    let usersCourseColors = JSON.parse(document.getElementById("listOfCourseColors").innerText)
-    let courseColors = getField(usersCourseColors, "color")
-    let colorsWithCommas = "";
+    let usersCourseColors = JSON.parse(document.getElementById("listOfCourseColors").innerText),
+    courseColors = getField(usersCourseColors, "color"),
+    colorsWithCommas = "";
 
     courseColors.forEach((color) => {
         colorsWithCommas += ', ' + color;
