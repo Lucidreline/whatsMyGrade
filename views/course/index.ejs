@@ -21,18 +21,18 @@
     </div>
 
     <div class="course-Cards">
-        <% courseList.forEach((course)=>{ %>
+        <% for(var i = courseList.length - 1; i > -1; i--){ %>
         <div class="course-Card">
-            <div class="card-top" style="background-color: <%= course.color %>;">
-                <h3><%= course.name %></h3>
+            <div class="card-top" style="background-color: <%= courseList[i].color %>;">
+                <h3><%= courseList[i].name %></h3>
             </div>
-            <h4><%= course.percentage.toFixed(2) %>%</h4>
+            <h4><%= courseList[i].percentage.toFixed(2) %>%</h4>
             <div class="course-card-footer">
-                <a href="courses/<%= course._id %>" style="border-right: 1.25px black solid;">View</a>
-                <a href="/courses/<%= course._id %>/edit">Edit</a>
+                <a href="courses/<%= courseList[i]._id %>" style="border-right: 1.25px black solid;">View</a>
+                <a href="/courses/<%= courseList[i]._id %>/edit">Edit</a>
             </div> 
         </div>
-        <% }) %>
+        <% } %>
     </div>
 </section>
 

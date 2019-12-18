@@ -10,6 +10,7 @@ var gradeSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category"
     },
+    categoryName: String,
     pointsRecieved: Number,
     //The max ammount of points that can be recieved (not incuding extra credit)
     possiblePoints: Number,

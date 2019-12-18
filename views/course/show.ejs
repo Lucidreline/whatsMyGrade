@@ -5,31 +5,50 @@
 <h2 style="display:none;" id="gradesObj"><%=JSON.stringify(grades)%></h2>
 <p style="display:none;" id="bodyColorHolder"> <%= course.color %> </p>
 
-<%= course.name %>
-<%= course.percentage %> %
+<div class="container">
+    <header class="course-show-head">
+        <h2><%= course.name %></h2>
+        <h3><%= course.percentage.toFixed(2) %>%</h3>
+    </header>
 
-<canvas id="gradeGraph"></canvas>
+    <section class="graph-section">
+        <canvas id="gradeGraph"></canvas>
+    </section>
 
-grades:
+    <section class="grades">
+        <a href="/courses/<%= course._id %>/grade/new">New grade</a>
 
-<% grades.forEach((grade)=>{ %>
-<p>
-    <%= grade.name %>
-</p>
+        <% for(var i = grades.length - 1; i > -1; i--){ %>
+            <div class="grade">
+                <div class="grade-title">
+                    <h4><%= grades[i].name %></h4>
+                </div>
+                <div class="grade-category">
+                    <p><%= grades[i].categoryName %></p>
+                </div>
+                <div class="grade-score">
+                    <p><%= grades[i].pointsRecieved %>/<%= grades[i].possiblePoints %></p>
+                </div>
+                <div class="grade-percentage">
+                    <p><%= grades[i].percentage %>%</p>
+                </div>
+                <div class="grade-edit">
+                    <a href="/courses/<%= course._id %>/grade/<%= grades[i]._id %>/edit">
+                        Edit
+                    </a>
+                </div>
+            </div>
+            <% } %>
 
-<a href="/courses/<%= course._id %>/grade/<%= grade._id %>/edit">
-    edit
-</a>
-<% }) %>
+    </section>
 
-
-<a href="/courses/<%= course._id %>/grade/new">New grade</a>
+</div>
 
 <script>
 
     //set background color
     colorColorHex = document.getElementById("bodyColorHolder").textContent.trim();
-    document.body.style.backgroundColor = colorColorHex + "67";
+    document.body.style.background = "linear-gradient(to right," + colorColorHex + "3d, "  + colorColorHex + "67, " + colorColorHex + "3d)";
 
     let navText = document.getElementsByClassName("nav-text");
     console.log(navText.length)
@@ -47,9 +66,9 @@ grades:
         input.forEach((inp) => output.push(inp[field]))
         return output
     }
-
+    
     let graph = document.getElementById("gradeGraph").getContext("2d");
-
+    Chart.defaults.global.defaultFontColor = 'black';
     let GradeGraph = new Chart(graph, {
         type: "bar",
 
@@ -79,9 +98,14 @@ grades:
                 }
             ]
         },
-        options: {}
+        options: {
+            legend:{
+                labels:{
+                    fontColor: 'black'
+                }
+            }
+        }
     })
-</script> -->
-
+</script> 
 
 <% include ../partials/footer %>

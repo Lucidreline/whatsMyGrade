@@ -30,7 +30,6 @@ h4,h5{
     font-size: 2.8rem;
 }
 a{
-    
     color:white;
     text-decoration: none;
     font-family: 'Poppins', sans-serif;
@@ -240,6 +239,45 @@ nav ul{
 
 .course-card-footer a:hover{
     background-color: rgba(0, 0, 0, 0.349);
+}
+
+.course-show-head{
+    background-color: #047ef848;
+    border-radius: 0 0 20px 20px;
+    border-bottom: black 2px solid;
+    color: white;
+    padding: 0.5rem 3rem;
+    min-height: 10vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.grade{
+    border: black 2px solid;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+    background-color: #131c277a;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+}
+
+.grade-title, .grade-category, .grade-score, .grade-percentage, .grade-edit{
+    flex-grow: 1;
+    flex-basis: 20rem;
+    color: white;
+    font-size: 3rem;
+    
+}
+
+.grade-edit a{
+    font-size: 2rem;
+    display: block;
 }
 
 

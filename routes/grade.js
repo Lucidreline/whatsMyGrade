@@ -79,6 +79,7 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res) => {
 
                             //We give the new grade the category
                             createdGrade.category = createdCategory;
+                            createdGrade.categoryName = createdCategory.name;
 
                             createdGrade.percentWorth = createdCategory.percentWorth;
 
@@ -105,6 +106,7 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res) => {
                             foundCategory.gradesAssociatedWith.push(createdGrade);
                             //we put the pre-exsisting category into the grade
                             createdGrade.category = foundCategory;
+                            createdGrade.categoryName = foundCategory.name;
 
 
                             createdGrade.percentWorth = foundCategory.percentWorth
@@ -193,6 +195,7 @@ router.put("/courses/:CourseID/grade/:gradeID/edit", (req, res) => {
 
                     //We give the new grade the category
                     updatedGrade.category = createdCategory;
+                    updatedGrade.categoryName = createdCategory.name;
 
                     updatedGrade.percentWorth = createdCategory.percentWorth;
 
@@ -216,6 +219,7 @@ router.put("/courses/:CourseID/grade/:gradeID/edit", (req, res) => {
                     foundCategory.gradesAssociatedWith.push(updatedGrade);
                     //we put the pre-exsisting category into the grade
                     updatedGrade.category = foundCategory;
+                    updatedGrade.categoryName = foundCategory.name;
 
 
                     updatedGrade.percentWorth = foundCategory.percentWorth
@@ -265,7 +269,6 @@ router.delete("/courses/:CourseID/grade/:gradeID/delete", (req, res) => {
 module.exports = router;
 
 // ======== FUNCTIONS =========
-
 async function SaveObjectsToDataBaseAndRedirect(_objectsToSave, _res, _redirectString) {
     //takes in an array of objects to save. You can enter as many as 4 objects, if you enter less then 4 won't cause an error 
     Promise.all([SaveObjectToDatabase(_objectsToSave[0]), SaveObjectToDatabase(_objectsToSave[1]), SaveObjectToDatabase(_objectsToSave[2]), SaveObjectToDatabase(_objectsToSave[3])])
@@ -382,7 +385,6 @@ function averageOfArray(_arr) {
     
     return sum / _arr.length;
 }
-
 //A middleware that goes on routes that I only want LOGGED IN users to enter.
 function isLoggedIn(req, res, next) {
     //If the user is not logged in, they will be redirected to the login in page
