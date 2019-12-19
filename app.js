@@ -22,7 +22,14 @@ app.use(require("express-session")({
 
 
 //Connects to the mongoose database
-mongoose.connect(process.env.MONGOOSE_LINK, {useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.MONGOOSE_LINK, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true 
+}).then(()=>{
+    console.log("Successfully connected to our DataBase Son!");
+}).catch(err =>{
+    console.log("Error: " + err);
+})
 
 //Lets config this app.. jazz it up a bit you know?
     //We have to tell the app to always render ejs files so that we
