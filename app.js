@@ -22,13 +22,14 @@ app.use(require("express-session")({
 
 
 //Connects to the mongoose database
+console.log("This is the link to the DB: " + process.env.MONGOOSE_LINK);
 mongoose.connect(process.env.MONGOOSE_LINK, {
     useNewUrlParser: true,
     useUnifiedTopology: true 
 }).then(()=>{
     console.log("Successfully connected to our DataBase Son!");
 }).catch(err =>{
-    console.log("Error: " + err);
+    console.log("Database Error: " + err.message);
 })
 
 //Lets config this app.. jazz it up a bit you know?
