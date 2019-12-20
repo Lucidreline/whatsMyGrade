@@ -1,7 +1,5 @@
 //The app's dependencies... we are just requiring all of the dependancies
-var passportLocalMongoose = require("passport-local-mongoose"),
-    methodOverride = require("method-override"),
-    localStrategy = require("passport-local"),
+var methodOverride = require("method-override"),
     bodyParser = require("body-parser"),
     mongoose = require("mongoose"),
     passport = require("passport"),
@@ -19,10 +17,7 @@ app.use(require("express-session")({
     saveUninitialized: false
 }))
 
-
-
 //Connects to the mongoose database
-console.log("This is the link to the DB: " + process.env.MONGOOSE_LINK);
 mongoose.connect(process.env.MONGOOSE_LINK, {
     useNewUrlParser: true,
     useUnifiedTopology: true 
@@ -46,7 +41,6 @@ mongoose.connect(process.env.MONGOOSE_LINK, {
     //Allows us to be able to use PUT and DELETE routes
     app.use(methodOverride("_method"));
 
-
 //Allows my app to use passport. This makes it possible to have secure passwords
 app.use(passport.initialize());
 app.use(passport.session())
@@ -68,13 +62,9 @@ app.use(function(req, res, next){
     next();
 })
 
-
 //gets the route files that are refactored into different files
-app.use(require("./routes/index"));
-app.use(require("./routes/user"));
-app.use(require("./routes/course"));
-app.use(require("./routes/grade"));
-
+var allRoutes = ["index", "user", "course", "grade"];
+allRoutes.forEach(route => app.use(require("./routes/" + route)))
 
 //Makes the server possible. Gives it a port and an IP adress if I give one.
-app.listen(process.env.PORT, ()=> console.log("Server is ONLINE"));
+app.listen(process.env.PORT, process.env.IP, ()=> console.log("Server is ONLINE"));
