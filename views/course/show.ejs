@@ -18,6 +18,54 @@
     <section class="grades">
         <a href="/courses/<%= course._id %>/grade/new">New grade</a>
 
+        <div class="add-grade">
+            <div class="grade-title">
+                <h4>Add Grade</h4>
+            </div>
+            <form action="/courses/<%= course._id %>/grade/new" method="POST">
+
+                <div class="name-form">
+                    <label for="name">Grade Name: </label>
+                    <input required type="text" name="grade[name]" placeholder="name">
+                </div>
+                <div class="grade-form">
+                    <label>Points Recieved: </label>
+                    <input required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved">
+                </div>
+                <div class="grade-form">
+                    <label>Total Possible Points: </label>
+                    <input required type="number" name="grade[possiblePoints]" placeholder="Total Possible Points">
+                </div>
+                <div class="grade-form">
+                    <label>Grade Category: </label>
+                    <select name="exsistingCategory[name]">
+                        <% categories.forEach((category)=>{ %>
+                            <option value="<%= category.name %>"><%= category.name %></option>
+                        <% }) %>
+                        <option value="New">New</option>
+                    </select>
+                </div>
+                <p>
+                    Create a category for this grade
+                </p>
+                <div class="grade-form">
+                    <label>New Category Name: </label>
+                    <input type="text" name="newCategory[name]" placeholder="New Category name">
+                </div>
+                <div class="grade-form">
+                    <label>Category Percent Worth: </label>
+                    <input type="number" name="newCategory[percentWorth]">
+                </div>
+                <div class="name-form">
+                    <input required id="courseColorInput" type="text" name="newCategory[color]" placeholder="Course color" style="display: none;">
+                    <label for="color">Click a Color: </label>
+                    <canvas id="colorPickerCanvas" width="375" height="60"></canvas>
+                    <div id="colorViewer" style="width:100%;height:30px;"></div>
+                </div>
+                <button class="new-grade-submit submit-btn" type="submit">Create!</button>
+            </form>           
+        </div>
+
         <% for(var i = grades.length - 1; i > -1; i--){ %>
             <div class="grade">
                 <div class="grade-title">
@@ -107,5 +155,72 @@
         }
     })
 </script> 
+
+<script>
+    var canvas = document.getElementById("colorPickerCanvas");
+
+    function getElementPosition(obj) {
+        var curleft = 0, curtop = 0;
+        if (obj.offsetParent) {
+            do {
+                curleft += obj.offsetLeft;
+                curtop += obj.offsetTop;
+            } while (obj = obj.offsetParent);
+            return { x: curleft, y: curtop };
+        }
+        return undefined;
+    }
+
+    function getEventLocation(element, event) {
+        var pos = getElementPosition(element);
+
+        return {
+            x: (event.pageX - pos.x),
+            y: (event.pageY - pos.y)
+        };
+    }
+
+    function rgbToHex(r, g, b) {
+        if (r > 255 || g > 255 || b > 255)
+            throw "Invalid color component";
+        return ((r << 16) | (g << 8) | b).toString(16);
+    }
+
+    function drawImageFromWebUrl(sourceurl) {
+        var img = new Image();
+        img.crossOrigin = "Anonymous";
+
+        img.addEventListener("load", function () {
+            // The image can be drawn from any source
+            canvas.getContext("2d").drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
+
+        });
+
+        img.setAttribute("src", sourceurl);
+    }
+    // Draw a base64 image because this is a fiddle, and if we try with an image from URL we'll get tainted canvas error
+    // Read more about here : http://ourcodeworld.com/articles/read/182/the-canvas-has-been-tainted-by-cross-origin-data-and-tainted-canvases-may-not-be-exported
+    drawImageFromWebUrl("https://res.cloudinary.com/clubphotos/image/upload/v1576562609/Light_Colors.png");
+
+    canvas.addEventListener("click", function (e) {
+        var eventLocation = getEventLocation(this, e);
+        var coord = "x=" + eventLocation.x + ", y=" + eventLocation.y;
+
+        // Get the data of the pixel according to the location generate by the getEventLocation function
+        var context = this.getContext('2d');
+        var pixelData = context.getImageData(eventLocation.x, eventLocation.y, 1, 1).data;
+
+        // If transparency on the image
+        if ((pixelData[0] == 0) && (pixelData[1] == 0) && (pixelData[2] == 0) && (pixelData[3] == 0)) {
+            coord += " (Transparent color detected, cannot be converted to HEX)";
+        }
+
+        var hex = "#" + ("000000" + rgbToHex(pixelData[0], pixelData[1], pixelData[2])).slice(-6);
+
+        // Draw the color and coordinates.
+        document.getElementById("colorViewer").style.backgroundColor = hex;
+        document.getElementById("courseColorInput").value = hex;
+    }, false);
+</script>
 
 <% include ../partials/footer %>

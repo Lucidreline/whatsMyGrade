@@ -66,7 +66,14 @@ router.get("/courses/:id", isLoggedIn, (req, res)=>{
                 res.redirect("/courses");
                 return
             }
-            res.render("course/show", {course: foundCourse, grades: foundGrades});
+            Category.find({ course: foundCourse._id }, (foundCategoryError, foundCategories) => {
+                if (foundCategoryError) {
+                    console.log("error while finding categories");
+                    res.redirect("/courses");
+                    return;
+                }
+                res.render("course/show", {course: foundCourse, grades: foundGrades, categories: foundCategories })
+            })
         })
     })
 })

@@ -68,7 +68,7 @@ nav ul{
     list-style: none;
 }
 #logo{
-    flex: 2 1 40rem;
+    flex: 2 1 46rem;
     font-family: 'Pattaya', sans-serif;
     font-weight: 400;
 }
@@ -133,6 +133,13 @@ nav ul{
     padding: 2rem;
     margin-top: 3rem;
     border-radius: 0px 0px 20px 20px;
+}
+
+.new-grade-submit.submit-btn {
+    width: 100%;
+    padding: 2rem;
+    margin-top: 3rem;
+    border-radius: 0px 0px 7px 7px;
 }
 
 .form-wrapper input{
@@ -266,6 +273,14 @@ nav ul{
     border-radius: 10px;
     margin-bottom: 2rem;
 }
+.add-grade{
+    border: black 2px solid;
+    align-items: center;
+    text-align: center;
+    background-color: #131c277a;
+    border-radius: 10px;
+    margin-bottom: 2rem;
+}
 
 .grade-title, .grade-category, .grade-score, .grade-percentage, .grade-edit{
     flex-grow: 1;
@@ -290,9 +305,9 @@ nav ul{
 }
 
 
-@media screen and (max-width:938px){
+@media only screen and (max-width:988px){
     html{
-        font-size: 50%;
+        font-size: 90%;
     }
     nav {
         text-align: center;
