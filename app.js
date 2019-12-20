@@ -67,4 +67,4 @@ var allRoutes = ["index", "user", "course", "grade"];
 allRoutes.forEach(route => app.use(require("./routes/" + route)))
 
 //Makes the server possible. Gives it a port and an IP adress if I give one.
-app.listen(process.env.PORT, process.env.IP, ()=> console.log("Server is ONLINE"));
+app.listen(process.env.PORT, process.env.IP , ()=> console.log("Server is ONLINE"));
