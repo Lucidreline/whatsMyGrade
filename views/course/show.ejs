@@ -16,56 +16,86 @@
     </section>
 
     <section class="grades">
-        <a href="/courses/<%= course._id %>/grade/new">New grade</a>
-
         <div class="add-grade">
-            <div class="grade-title">
-                <h4>Add Grade</h4>
-            </div>
+            <h4 id="add-grade-btn" class="newGrade-title">Add Grade</h4>
             <form action="/courses/<%= course._id %>/grade/new" method="POST">
-
-                <div class="name-form">
-                    <label for="name">Grade Name: </label>
-                    <input required type="text" name="grade[name]" placeholder="name">
+                <div id="add-grade-accordian">
+                    <div class="row">
+                        <div class="left-half-col col-half">
+                            <label for="name">Grade Name: </label>
+                        </div>
+                        <div class="right-half-col col-half">
+                            <input required type="text" name="grade[name]" placeholder="name">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="left-half-col col-half">
+                            <label>Points Recieved: </label>
+                        </div>
+                        <div class="right-half-col col-half">
+                            <input required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="left-half-col col-half">
+                            <label>Total Possible Points: </label>
+                        </div>
+                        <div class="right-half-col col-half">
+                            <input required type="number" name="grade[possiblePoints]" placeholder="Total Possible Points">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="left-half-col col-half">
+                            <label>Grade Category: </label>
+                        </div>
+                        <div class="right-half-col col-half">
+                            <select id="category-selector" name="exsistingCategory[name]">
+                                <% categories.forEach((category)=>{ %>
+                                    <option value="<%= category.name %>"><%= category.name %></option>
+                                <% }) %>
+                                <option value="New">New</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="add-category-accordian">
+                        <h5 class="newGrade-subtitle">
+                            Create a category for this grade
+                        </h5>
+        
+                        <div class="row">
+                            <div class="left-half-col col-half">
+                                <label>Category Name: </label>
+                            </div>
+                            <div class="right-half-col col-half">
+                                <input type="text" name="newCategory[name]" placeholder="New Category name">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="left-half-col col-half">
+                                <label>Category Percent Worth: </label>
+                            </div>
+                            <div class="right-half-col col-half">
+                                <input type="number" name="newCategory[percentWorth]">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="left-half-col col-half">
+                                <label for="color">Click a Color: </label>
+                            </div>
+                            <div class="right-half-col col-half">
+                                <input required id="courseColorInput" type="text" name="newCategory[color]" placeholder="Course color" style="display: none;">
+                                <canvas id="colorPickerCanvas" width="375" height="60"></canvas>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div id="colorViewer" style="width:100%;height:30px;"></div>
+                        </div>
+                    </div>
+                    <button class="new-grade-submit submit-btn" type="submit">Create!</button>
                 </div>
-                <div class="grade-form">
-                    <label>Points Recieved: </label>
-                    <input required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved">
-                </div>
-                <div class="grade-form">
-                    <label>Total Possible Points: </label>
-                    <input required type="number" name="grade[possiblePoints]" placeholder="Total Possible Points">
-                </div>
-                <div class="grade-form">
-                    <label>Grade Category: </label>
-                    <select name="exsistingCategory[name]">
-                        <% categories.forEach((category)=>{ %>
-                            <option value="<%= category.name %>"><%= category.name %></option>
-                        <% }) %>
-                        <option value="New">New</option>
-                    </select>
-                </div>
-                <p>
-                    Create a category for this grade
-                </p>
-                <div class="grade-form">
-                    <label>New Category Name: </label>
-                    <input type="text" name="newCategory[name]" placeholder="New Category name">
-                </div>
-                <div class="grade-form">
-                    <label>Category Percent Worth: </label>
-                    <input type="number" name="newCategory[percentWorth]">
-                </div>
-                <div class="name-form">
-                    <input required id="courseColorInput" type="text" name="newCategory[color]" placeholder="Course color" style="display: none;">
-                    <label for="color">Click a Color: </label>
-                    <canvas id="colorPickerCanvas" width="375" height="60"></canvas>
-                    <div id="colorViewer" style="width:100%;height:30px;"></div>
-                </div>
-                <button class="new-grade-submit submit-btn" type="submit">Create!</button>
+                
             </form>           
         </div>
-
         <% for(var i = grades.length - 1; i > -1; i--){ %>
             <div class="grade">
                 <div class="grade-title">
@@ -99,12 +129,33 @@
     document.body.style.background = "linear-gradient(to right," + colorColorHex + "3d, "  + colorColorHex + "67, " + colorColorHex + "3d)";
 
     let navText = document.getElementsByClassName("nav-text");
-    console.log(navText.length)
     for(var i = 0; i < navText.length; i++){
         navText[i].style.color = colorColorHex;
     }
     
+    //Pulls out the 'new grade menu' when the 'add grade' button is clicked
+    var addGradeBtn = document.getElementById("add-grade-btn").addEventListener("click", function(){
+        var addGradeAccordian = document.getElementById("add-grade-accordian");
+        if(addGradeAccordian.style.display === "block"){
+            addGradeAccordian.style.display = "none";
+        }else{
+            addGradeAccordian.style.display = "block"
+            var categorySelector = document.getElementById("category-selector")
+            document.getElementById("add-category-accordian").style.display = (categorySelector.value == "New") ? "block" : "none";
+        }
+    })
 
+    //Pulls out the new category menu if the new option is selected
+    var categorySelector = document.getElementById("category-selector")
+    categorySelector.addEventListener("change", ()=>{
+        var options = categorySelector.querySelectorAll("option"), 
+            selectedValue;
+
+        options.forEach(option =>{ 
+            if(option.selected) selectedValue = option.value;
+        })
+        document.getElementById("add-category-accordian").style.display = (selectedValue == "New") ? "block" : "none"
+    }) 
 
     //put the grades in the graph
     var gradesList = JSON.parse(document.getElementById("gradesObj").innerText);

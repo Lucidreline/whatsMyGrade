@@ -67,6 +67,19 @@ nav ul{
     justify-content: space-around;
     list-style: none;
 }
+
+.row{
+    display: flex;    
+    flex-wrap: wrap;
+}
+
+.col-half{
+    min-width: 50%;
+    flex-grow: 1;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
 #logo{
     flex: 2 1 46rem;
     font-family: 'Pattaya', sans-serif;
@@ -289,10 +302,35 @@ nav ul{
     font-size: 3rem;
     
 }
+.newGrade-title{
+    color: white;
+    font-size: 3rem;
+    cursor: pointer;
+}
+
+.newGrade-subtitle{
+    color: white;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
 
 .grade-edit a{
     font-size: 2rem;
     display: block;
+}
+.right-half-col{
+    text-align: left;
+}
+.left-half-col{
+    text-align: right;
+    padding-right: 1rem;
+}
+
+#add-grade-accordian{
+    display: none;
+}
+#add-category-accordian{
+    display: none;
 }
 
 
