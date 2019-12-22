@@ -6,12 +6,12 @@
 <p style="display:none;" id="bodyColorHolder"> <%= course.color %> </p>
 
 <div class="container">
-    <header class="course-show-head">
+    <header id="course-banner" class="course-show-head">
         <h2><%= course.name %></h2>
         <h3><%= course.percentage.toFixed(2) %>%</h3>
     </header>
 
-    <section class="graph-section">
+    <section class="graph-section" style="width: 88%; margin:auto;">
         <canvas id="gradeGraph"></canvas>
     </section>
 
@@ -83,12 +83,18 @@
                                 <label for="color">Click a Color: </label>
                             </div>
                             <div class="right-half-col col-half">
-                                <input  id="courseColorInput" type="text" name="newCategory[color]" placeholder="Course color" style="display: none;">
-                                <canvas id="colorPickerCanvas" width="375" height="60"></canvas>
+
                             </div>
                         </div>
                         <div class="row">
-                            <div id="colorViewer" style="width:100%;height:30px;"></div>
+                            <div class="one-col-center">
+                                <input  id="courseColorInput" type="text" name="newCategory[color]" placeholder="Course color" style="display: none;">
+                            <canvas id="colorPickerCanvas" width="375" height="60"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div id="colorViewer"></div>
                         </div>
                     </div>
                     <button class="new-grade-submit submit-btn" type="submit">Create!</button>
@@ -108,7 +114,7 @@
                     <p><%= grades[i].pointsRecieved %>/<%= grades[i].possiblePoints %></p>
                 </div>
                 <div class="grade-percentage">
-                    <p><%= grades[i].percentage %>%</p>
+                    <p><%= grades[i].percentage.toFixed(2) %>%</p>
                 </div>
                 <div class="grade-edit">
                     <a href="/courses/<%= course._id %>/grade/<%= grades[i]._id %>/edit">
@@ -125,12 +131,12 @@
 <script>
 
     //set background color
-    colorColorHex = document.getElementById("bodyColorHolder").textContent.trim();
-    document.body.style.background = "linear-gradient(to right," + colorColorHex + "3d, "  + colorColorHex + "67, " + colorColorHex + "3d)";
+    var courseColorHexCode = document.getElementById("bodyColorHolder").textContent.trim();
+    document.body.style.background = "linear-gradient(to right," + courseColorHexCode + "3d, "  + courseColorHexCode + "67, " + courseColorHexCode + "3d)";
 
     let navText = document.getElementsByClassName("nav-text");
     for(var i = 0; i < navText.length; i++){
-        navText[i].style.color = colorColorHex;
+        navText[i].style.color = courseColorHexCode;
     }
     
     //Pulls out the 'new grade menu' when the 'add grade' button is clicked
@@ -207,7 +213,9 @@
     })
 </script> 
 
+
 <script>
+    //Script for picking a color
     var canvas = document.getElementById("colorPickerCanvas");
 
     function getElementPosition(obj) {
@@ -243,6 +251,8 @@
 
         img.addEventListener("load", function () {
             // The image can be drawn from any source
+            canvas.width = img.width * 1.2;
+            canvas.height = img.height * 1.2;
             canvas.getContext("2d").drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
 
         });

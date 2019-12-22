@@ -1,35 +1,144 @@
 <% include ../partials/header %>
 
+<p style="display:none;" id="categoryColorHolder"> <%= grade.categoryColor %> </p>
+<p style="display:none;" id="bodyColorHolder"> <%= course.color %> </p>
 
-<form action="/courses/<%= course._id %>/grade/<%= grade._id %>/edit?_method=PUT" method="POST">
+
+
+<section class="edit-grade-section">
+    <div class="edit-grade">
+        <form style="text-align: left;" action="/courses/<%= course._id %>/grade/<%= grade._id %>/delete?_method=DELETE" method="POST">
+            <button class="circle-btn delete-btn">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+        </form>
+        <h4 id="add-grade-btn" class="newGrade-title">Edit Grade</h4>
+        <form action="/courses/<%= course._id %>/grade/<%= grade._id %>/edit?_method=PUT" method="POST">
+                <div class="row">
+                    <div class="left-half-col col-half">
+                        <label for="name">Grade Name: </label>
+                    </div>
+                    <div class="right-half-col col-half">
+                        <input required type="text" name="grade[name]" placeholder="name" value="<%= grade.name %>">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left-half-col col-half">
+                        <label>Points Recieved: </label>
+                    </div>
+                    <div class="right-half-col col-half">
+                        <input required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved"
+                            value="<%= grade.pointsRecieved %>">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left-half-col col-half">
+                        <label>Total Possible Points: </label>
+                    </div>
+                    <div class="right-half-col col-half">
+                        <input required type="number" name="grade[possiblePoints]" placeholder="Total Possible Points"
+                            value="<%= grade.possiblePoints %>">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="left-half-col col-half">
+                        <label>Grade Category: </label>
+                    </div>
+                    <div class="right-half-col col-half">
+                        <select name="exsistingCategory[name]" id="category-selector">
+                            <% categories.forEach((category)=>{ %>
+                            <% if(grade.category.toString() == category._id.toString()){ %>
+                            <option selected value="<%= category.name %>"><%= category.name %></option>
+                            <% }else{ %>
+                            <option value="<%= category.name %>"><%= category.name %></option>
+                            <% } %>
+                            <% }) %>
+                            <option value="New">New</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="add-category-accordian">
+                    <h5 class="newGrade-subtitle">
+                        Create a category for this grade
+                    </h5>
+
+                    <div class="row">
+                        <div class="left-half-col col-half">
+                            <label>Category Name: </label>
+                        </div>
+                        <div class="right-half-col col-half">
+                            <input type="text" name="newCategory[name]" placeholder="New Category name">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="left-half-col col-half">
+                            <label>Category Percent Worth: </label>
+                        </div>
+                        <div class="right-half-col col-half">
+                            <input type="number" name="newCategory[percentWorth]">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="left-half-col col-half">
+                            <label for="color">Click a Color: </label>
+                        </div>
+                        <div class="right-half-col col-half">
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="one-col-center">
+                            <input id="courseColorInput" type="text" name="newCategory[color]"
+                                placeholder="Course color" style="display: none;">
+                            <canvas id="colorPickerCanvas" width="375" height="60"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div id="colorViewer"></div>
+                    </div>
+                </div>
+                <button class="new-grade-submit submit-btn" type="submit">Update!</button>
+        </form>
+    </div>
+</section>
+
+
+
+
+
+
+<!-- <form action="/courses/<%= course._id %>/grade/<%= grade._id %>/edit?_method=PUT" method="POST">
     <input required type="text" name="grade[name]" placeholder="name" value="<%= grade.name %>">
-    <input required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved" value="<%= grade.pointsRecieved %>">
-    <input required type="number" name="grade[possiblePoints]" placeholder="Total Possible Points" value="<%= grade.possiblePoints %>">
+    <input required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved"
+        value="<%= grade.pointsRecieved %>">
+    <input required type="number" name="grade[possiblePoints]" placeholder="Total Possible Points"
+        value="<%= grade.possiblePoints %>">
 
 
-        <select name="exsistingCategory[name]">
-            <% categories.forEach((category)=>{ %>
-                <% if(grade.category.toString() == category._id.toString()){ %>
-                    <option selected value="<%= category.name %>"><%= category.name %></option>
-                    <% }else{ %>
-                    <option value="<%= category.name %>"><%= category.name %></option>
-                    <% } %>
-            <% }) %>
-            <option value="New">New</option>
-        </select>
+    <select name="exsistingCategory[name]">
+        <% categories.forEach((category)=>{ %>
+        <% if(grade.category.toString() == category._id.toString()){ %>
+        <option selected value="<%= category.name %>"><%= category.name %></option>
+        <% }else{ %>
+        <option value="<%= category.name %>"><%= category.name %></option>
+        <% } %>
+        <% }) %>
+        <option value="New">New</option>
+    </select>
 
-        Try to make this bottom part only show up when user selects new using javascript
-        <p>
-            Create a category for this grade
-        </p>
+    Try to make this bottom part only show up when user selects new using javascript
+    <p>
+        Create a category for this grade
+    </p>
 
-    
+
     <input type="text" name="newCategory[name]" placeholder="New Category name">
     <p>What percentage is this worth?</p>
 
     <input type="text" name="newCategory[color]" placeholder="New Category color">
-    
-    <input type="number" name="newCategory[percentWorth]" >
+
+    <input type="number" name="newCategory[percentWorth]">
 
 
     <button>Submit</button>
@@ -39,8 +148,100 @@
 
 <form action="/courses/<%= course._id %>/grade/<%= grade._id %>/delete?_method=DELETE" method="POST">
     <button>Delete</button>
-</form>
+</form> -->
 
 
+<script>
+    var courseColorHexCode = document.getElementById("bodyColorHolder").textContent.trim(),
+        categoryColorHexCode = document.getElementById("categoryColorHolder").textContent.trim();
 
+    document.body.style.background = "linear-gradient(to right," + courseColorHexCode + ", "  + categoryColorHexCode + "67, " + courseColorHexCode + ")";
+
+    let navText = document.getElementsByClassName("nav-text");
+    for(var i = 0; i < navText.length; i++){
+        navText[i].style.color = categoryColorHexCode;
+    }
+
+var categorySelector = document.getElementById("category-selector")
+    categorySelector.addEventListener("change", ()=>{
+        var options = categorySelector.querySelectorAll("option"), 
+            selectedValue;
+
+        options.forEach(option =>{ 
+            if(option.selected) selectedValue = option.value;
+        })
+        document.getElementById("add-category-accordian").style.display = (selectedValue == "New") ? "block" : "none"
+    })
+
+</script>
+
+<script>
+    //Script for picking a color
+    var canvas = document.getElementById("colorPickerCanvas");
+
+    function getElementPosition(obj) {
+        var curleft = 0, curtop = 0;
+        if (obj.offsetParent) {
+            do {
+                curleft += obj.offsetLeft;
+                curtop += obj.offsetTop;
+            } while (obj = obj.offsetParent);
+            return { x: curleft, y: curtop };
+        }
+        return undefined;
+    }
+
+    function getEventLocation(element, event) {
+        var pos = getElementPosition(element);
+
+        return {
+            x: (event.pageX - pos.x),
+            y: (event.pageY - pos.y)
+        };
+    }
+
+    function rgbToHex(r, g, b) {
+        if (r > 255 || g > 255 || b > 255)
+            throw "Invalid color component";
+        return ((r << 16) | (g << 8) | b).toString(16);
+    }
+
+    function drawImageFromWebUrl(sourceurl) {
+        var img = new Image();
+        img.crossOrigin = "Anonymous";
+
+        img.addEventListener("load", function () {
+            // The image can be drawn from any source
+            canvas.width = img.width * 1.2;
+            canvas.height = img.height * 1.2;
+            canvas.getContext("2d").drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
+
+        });
+
+        img.setAttribute("src", sourceurl);
+    }
+    // Draw a base64 image because this is a fiddle, and if we try with an image from URL we'll get tainted canvas error
+    // Read more about here : http://ourcodeworld.com/articles/read/182/the-canvas-has-been-tainted-by-cross-origin-data-and-tainted-canvases-may-not-be-exported
+    drawImageFromWebUrl("https://res.cloudinary.com/clubphotos/image/upload/v1576562609/Light_Colors.png");
+
+    canvas.addEventListener("click", function (e) {
+        var eventLocation = getEventLocation(this, e);
+        var coord = "x=" + eventLocation.x + ", y=" + eventLocation.y;
+
+        // Get the data of the pixel according to the location generate by the getEventLocation function
+        var context = this.getContext('2d');
+        var pixelData = context.getImageData(eventLocation.x, eventLocation.y, 1, 1).data;
+
+        // If transparency on the image
+        if ((pixelData[0] == 0) && (pixelData[1] == 0) && (pixelData[2] == 0) && (pixelData[3] == 0)) {
+            coord += " (Transparent color detected, cannot be converted to HEX)";
+        }
+
+        var hex = "#" + ("000000" + rgbToHex(pixelData[0], pixelData[1], pixelData[2])).slice(-6);
+
+        // Draw the color and coordinates.
+        document.getElementById("colorViewer").style.backgroundColor = hex;
+        document.getElementById("courseColorInput").value = hex;
+    }, false);
+</script>
 <% include ../partials/footer %>

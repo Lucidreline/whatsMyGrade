@@ -121,13 +121,8 @@ nav ul{
     flex-wrap: wrap;
 }
 
-.form-wrapper{
-    background: rgba(0, 0, 0, 0.404);
-    color: white;
-    border-radius: 20px;
-    flex-basis: 60rem;
-    margin: 4rem 2rem;
-}
+
+
 
 .form-head{
     text-align: center;
@@ -139,7 +134,7 @@ nav ul{
     text-align: center;
 }
 .form-wrapper label{
-    margin: 0rem 3rem;
+    margin: 0rem 1rem;
 }
 .form-wrapper .submit-btn{
     width: 100%;
@@ -294,6 +289,16 @@ nav ul{
     border-radius: 10px;
     margin-bottom: 2rem;
 }
+.edit-grade{
+    border: black 2px solid;
+    align-items: center;
+    text-align: center;
+    background-color: #131c274d;
+    border-radius: 17px;
+    width: 90%;
+    margin: auto;
+    margin-top: 5rem;
+}
 
 .grade-title, .grade-category, .grade-score, .grade-percentage, .grade-edit{
     flex-grow: 1;
@@ -320,11 +325,32 @@ nav ul{
 }
 .right-half-col{
     text-align: left;
+    flex-basis: 5rem;
 }
 .left-half-col{
     text-align: right;
     padding-right: 1rem;
+    flex-basis: 5rem;
 }
+
+.one-col-center{
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+#colorPickerCanvas{
+    text-align: center;
+    margin:auto;
+}
+#colorViewer{
+    width: 90%;
+    margin: auto;
+    height: 4rem;
+    margin-top: 2.5rem;
+}
+
 
 #add-grade-accordian{
     display: none;
@@ -334,14 +360,51 @@ nav ul{
 }
 
 
-
-@media screen and (max-width:507px){
-    #colorPickerCanvas{
-        height: 50px;
-        width: 365px;
-    }
+.form-wrapper{
+    background: rgba(0, 0, 0, 0.404);
+    color: white;
+    border-radius: 20px;
+    margin: 4rem 2rem;
+    
 }
 
+.form-row{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 2rem 5rem;
+    align-items: center;
+}
+
+.form-row input{
+    height:2.8frem;
+    width:100%
+}
+
+.left-form-box{
+    flex-basis: 25rem;
+    min-width: 10rem;
+    text-align: right;
+}
+.right-form-box{
+    flex-basis: 25rem;
+    min-width: 10rem;
+    text-align: left;
+}
+
+
+
+@media screen and (max-width:507px){
+    
+}
+
+@media only screen and (max-width:648px){
+.left-half-col, .right-half-col{
+    text-align: center ;
+    }
+
+
+}
 
 @media only screen and (max-width:988px){
     html{
@@ -352,6 +415,9 @@ nav ul{
     }
     #logo{
         padding: 0.5rem 0.5rem 1.5rem 0.5rem;
+    }
+    #colorPickerCanvas{
+        width:100%
     }
 }
 

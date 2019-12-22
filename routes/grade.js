@@ -11,28 +11,28 @@ var Course = require("../models/course"),
 //note that grade will not have its own index/show page, they will be displayed on the course show page
 
 //GRADE CREATE - - - - Renders the form to create a new grade
-router.get("/courses/:id/grade/new", isLoggedIn, (req, res) => {
-    //Finds the ONE course by using the ID inside of the url
-    Course.findOne({ _id: req.params.id }, (foundCourseError, foundCourse) => {
-        if (foundCourseError) {
-            console.log("Was not able to find course!");
-            res.redirect("/courses");
-            return;
-        }
+// router.get("/courses/:id/grade/new", isLoggedIn, (req, res) => {
+//     //Finds the ONE course by using the ID inside of the url
+//     Course.findOne({ _id: req.params.id }, (foundCourseError, foundCourse) => {
+//         if (foundCourseError) {
+//             console.log("Was not able to find course!");
+//             res.redirect("/courses");
+//             return;
+//         }
 
 
-        //Finds a list of Categories that are associated with the course that was just found
-        Category.find({ course: foundCourse._id }, (foundCategoryError, foundCategories) => {
-            if (foundCategoryError) {
-                console.log("error while finding categories");
-                res.redirect("/courses");
-                return;
-            }
-            res.render("grade/new", { course: foundCourse, categories: foundCategories })
-        })
+//         //Finds a list of Categories that are associated with the course that was just found
+//         Category.find({ course: foundCourse._id }, (foundCategoryError, foundCategories) => {
+//             if (foundCategoryError) {
+//                 console.log("error while finding categories");
+//                 res.redirect("/courses");
+//                 return;
+//             }
+//             res.render("grade/new", { course: foundCourse, categories: foundCategories })
+//         })
 
-    });
-})
+//     });
+// })
 
 //GRADE CREATE - - - Processes the information from the 'Grade Create' form
 router.post("/courses/:id/grade/new", isLoggedIn, (req, res) => {
