@@ -11,44 +11,44 @@
         <h3><%= course.percentage.toFixed(2) %>%</h3>
     </header>
 
-    <section class="graph-section" style="width: 88%; margin:auto;">
+    <section class="graph-section" style="width: 88%; margin:3rem auto;">
         <canvas id="gradeGraph"></canvas>
     </section>
 
     <section class="grades">
         <div class="add-grade">
-            <h4 id="add-grade-btn" class="newGrade-title">Add Grade</h4>
+            <h4 style="cursor: pointer;" id="add-grade-btn" class="newGrade-title">Add Grade</h4>
             <form action="/courses/<%= course._id %>/grade/new" method="POST">
                 <div id="add-grade-accordian">
-                    <div class="row">
-                        <div class="left-half-col col-half">
+                    <div class="form-row">
+                        <div class="left-form-box">
                             <label for="name">Grade Name: </label>
                         </div>
-                        <div class="right-half-col col-half">
-                            <input required type="text" name="grade[name]" placeholder="name">
+                        <div class="right-form-box">
+                            <input class="under-line-input" required type="text" name="grade[name]" placeholder="name">
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="left-half-col col-half">
+                    <div class="form-row">
+                        <div class="left-form-box">
                             <label>Points Recieved: </label>
                         </div>
-                        <div class="right-half-col col-half">
-                            <input required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved">
+                        <div class="right-form-box">
+                            <input class="under-line-input" required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved">
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="left-half-col col-half">
+                    <div class="form-row">
+                        <div class="left-form-box">
                             <label>Total Possible Points: </label>
                         </div>
-                        <div class="right-half-col col-half">
-                            <input required type="number" name="grade[possiblePoints]" placeholder="Total Possible Points">
+                        <div class="right-form-box">
+                            <input class="under-line-input" required type="number" name="grade[possiblePoints]" placeholder="Total Possible Points">
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="left-half-col col-half">
+                    <div class="form-row">
+                        <div class="left-form-box">
                             <label>Grade Category: </label>
                         </div>
-                        <div class="right-half-col col-half">
+                        <div class="right-form-box">
                             <select id="category-selector" name="exsistingCategory[name]">
                                 <% categories.forEach((category)=>{ %>
                                     <option value="<%= category.name %>"><%= category.name %></option>
@@ -62,31 +62,31 @@
                             Create a category for this grade
                         </h5>
         
-                        <div class="row">
-                            <div class="left-half-col col-half">
+                        <div class="form-row">
+                            <div class="left-form-box">
                                 <label>Category Name: </label>
                             </div>
-                            <div class="right-half-col col-half">
-                                <input type="text" name="newCategory[name]" placeholder="New Category name">
+                            <div class="right-form-box">
+                                <input class="under-line-input" type="text" name="newCategory[name]" placeholder="New Category name">
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="left-half-col col-half">
+                        <div class="form-row">
+                            <div class="left-form-box">
                                 <label>Category Percent Worth: </label>
                             </div>
-                            <div class="right-half-col col-half">
-                                <input type="number" name="newCategory[percentWorth]">
+                            <div class="right-form-box">
+                                <input class="under-line-input" type="number" name="newCategory[percentWorth]" placeholder="Percent Worth">
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="left-half-col col-half">
+                        <div class="form-row">
+                            <div class="left-form-box">
                                 <label for="color">Click a Color: </label>
                             </div>
-                            <div class="right-half-col col-half">
+                            <div class="right-form-box">
 
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="form-row">
                             <div class="one-col-center">
                                 <input  id="courseColorInput" type="text" name="newCategory[color]" placeholder="Course color" style="display: none;">
                             <canvas id="colorPickerCanvas" width="375" height="60"></canvas>

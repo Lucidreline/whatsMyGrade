@@ -1,7 +1,7 @@
 <% include ../partials/header %>
 
-
-<section id="user-forms">
+<h1 id="courseColorHex" style="display: none"><%= course.color %></h1>
+<section>
     <div class="form-wrapper">
         <form action="/courses/<%= course._id %>/delete?_method=DELETE" method="POST">
             <button class="circle-btn delete-btn">
@@ -18,7 +18,7 @@
                     <label for="name">Course Name: </label>
                 </div>
                 <div class="right-form-box">
-                    <input required type="text" name="course[name]" placeholder="Course name" value="<%= course.name %>" required>
+                    <input class="under-line-input" required type="text" name="course[name]" placeholder="Course name" value="<%= course.name %>" required>
                 </div>
             </div>
             
@@ -30,7 +30,7 @@
 
                 </div>
             </div>
-            <div class="row">
+            <div class="form-row">
                 <div class="">
                     <input required id="courseColorInput" type="text" name="course[color]" placeholder="Course color" value="<%= course.color %>"
                     style="display: none;">
@@ -42,15 +42,17 @@
                 <div id="colorViewer" style="background-color: <%= course.color %>;"></div>
             </div>
 
-            <button class="submit-btn" type="submit">Create!</button>
+            <button class="submit-btn" type="submit">Update!</button>
         </form>
     </div>
 </section>
 
 
 <script>
+    var courseColorHexCode = document.getElementById("courseColorHex").textContent.trim()
+    document.body.style.background = "linear-gradient(to right," + courseColorHexCode + "ce, " + courseColorHexCode + "be, " + courseColorHexCode + "ce)";
+    
     var canvas = document.getElementById("colorPickerCanvas");
-
     function getElementPosition(obj) {
         var curleft = 0, curtop = 0;
         if (obj.offsetParent) {

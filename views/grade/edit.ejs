@@ -6,45 +6,51 @@
 
 
 <section class="edit-grade-section">
-    <div class="edit-grade">
-        <form style="text-align: left;" action="/courses/<%= course._id %>/grade/<%= grade._id %>/delete?_method=DELETE" method="POST">
-            <button class="circle-btn delete-btn">
-                <i class="fas fa-trash-alt"></i>
-            </button>
-        </form>
-        <h4 id="add-grade-btn" class="newGrade-title">Edit Grade</h4>
-        <form action="/courses/<%= course._id %>/grade/<%= grade._id %>/edit?_method=PUT" method="POST">
-                <div class="row">
-                    <div class="left-half-col col-half">
+    <div class="form-wrapper">
+
+        
+            <form style="text-align: left;"
+                action="/courses/<%= course._id %>/grade/<%= grade._id %>/delete?_method=DELETE" method="POST">
+                <button class="circle-btn delete-btn">
+                    <i class="fas fa-trash-alt"></i>
+                </button>
+            </form>
+            <header style="padding-top: 0;" class='form-head'>
+                <h2 >Edit <%= grade.name %>!</h2>
+            </header>
+            <form action="/courses/<%= course._id %>/grade/<%= grade._id %>/edit?_method=PUT" method="POST">
+                <div class="form-row">
+                    <div class="left-form-box">
                         <label for="name">Grade Name: </label>
                     </div>
-                    <div class="right-half-col col-half">
-                        <input required type="text" name="grade[name]" placeholder="name" value="<%= grade.name %>">
+                    <div class="right-form-box">
+                        <input class="under-line-input" required type="text" name="grade[name]" placeholder="name"
+                            value="<%= grade.name %>">
                     </div>
                 </div>
-                <div class="row">
-                    <div class="left-half-col col-half">
+                <div class="form-row">
+                    <div class="left-form-box">
                         <label>Points Recieved: </label>
                     </div>
-                    <div class="right-half-col col-half">
+                    <div class="right-form-box">
                         <input required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved"
-                            value="<%= grade.pointsRecieved %>">
+                            class="under-line-input" value="<%= grade.pointsRecieved %>">
                     </div>
                 </div>
-                <div class="row">
-                    <div class="left-half-col col-half">
+                <div class="form-row">
+                    <div class="left-form-box">
                         <label>Total Possible Points: </label>
                     </div>
-                    <div class="right-half-col col-half">
+                    <div class="right-form-box">
                         <input required type="number" name="grade[possiblePoints]" placeholder="Total Possible Points"
-                            value="<%= grade.possiblePoints %>">
+                            class="under-line-input" value="<%= grade.possiblePoints %>">
                     </div>
                 </div>
-                <div class="row">
-                    <div class="left-half-col col-half">
+                <div class="form-row">
+                    <div class="left-form-box">
                         <label>Grade Category: </label>
                     </div>
-                    <div class="right-half-col col-half">
+                    <div class="right-form-box">
                         <select name="exsistingCategory[name]" id="category-selector">
                             <% categories.forEach((category)=>{ %>
                             <% if(grade.category.toString() == category._id.toString()){ %>
@@ -62,31 +68,33 @@
                         Create a category for this grade
                     </h5>
 
-                    <div class="row">
-                        <div class="left-half-col col-half">
+                    <div class="form-row">
+                        <div class="left-form-box">
                             <label>Category Name: </label>
                         </div>
-                        <div class="right-half-col col-half">
-                            <input type="text" name="newCategory[name]" placeholder="New Category name">
+                        <div class="right-form-box">
+                            <input class="under-line-input" type="text" name="newCategory[name]"
+                                placeholder="New Category name">
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="left-half-col col-half">
+                    <div class="form-row">
+                        <div class="left-form-box">
                             <label>Category Percent Worth: </label>
                         </div>
-                        <div class="right-half-col col-half">
-                            <input type="number" name="newCategory[percentWorth]">
+                        <div class="right-form-box">
+                            <input class="under-line-input" type="number" name="newCategory[percentWorth]"
+                                placeholder="Percent Worth">
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="left-half-col col-half">
+                    <div class="form-row">
+                        <div class="left-form-box">
                             <label for="color">Click a Color: </label>
                         </div>
-                        <div class="right-half-col col-half">
+                        <div class="right-form-box">
 
                         </div>
                     </div>
-                    <div class="row">
+                    <div class="form-row">
                         <div class="one-col-center">
                             <input id="courseColorInput" type="text" name="newCategory[color]"
                                 placeholder="Course color" style="display: none;">
@@ -94,12 +102,13 @@
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="form-row">
                         <div id="colorViewer"></div>
                     </div>
                 </div>
                 <button class="new-grade-submit submit-btn" type="submit">Update!</button>
-        </form>
+            </form>
+    
     </div>
 </section>
 
@@ -108,67 +117,25 @@
 
 
 
-<!-- <form action="/courses/<%= course._id %>/grade/<%= grade._id %>/edit?_method=PUT" method="POST">
-    <input required type="text" name="grade[name]" placeholder="name" value="<%= grade.name %>">
-    <input required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved"
-        value="<%= grade.pointsRecieved %>">
-    <input required type="number" name="grade[possiblePoints]" placeholder="Total Possible Points"
-        value="<%= grade.possiblePoints %>">
-
-
-    <select name="exsistingCategory[name]">
-        <% categories.forEach((category)=>{ %>
-        <% if(grade.category.toString() == category._id.toString()){ %>
-        <option selected value="<%= category.name %>"><%= category.name %></option>
-        <% }else{ %>
-        <option value="<%= category.name %>"><%= category.name %></option>
-        <% } %>
-        <% }) %>
-        <option value="New">New</option>
-    </select>
-
-    Try to make this bottom part only show up when user selects new using javascript
-    <p>
-        Create a category for this grade
-    </p>
-
-
-    <input type="text" name="newCategory[name]" placeholder="New Category name">
-    <p>What percentage is this worth?</p>
-
-    <input type="text" name="newCategory[color]" placeholder="New Category color">
-
-    <input type="number" name="newCategory[percentWorth]">
-
-
-    <button>Submit</button>
-</form>
-
-<br>
-
-<form action="/courses/<%= course._id %>/grade/<%= grade._id %>/delete?_method=DELETE" method="POST">
-    <button>Delete</button>
-</form> -->
-
 
 <script>
     var courseColorHexCode = document.getElementById("bodyColorHolder").textContent.trim(),
         categoryColorHexCode = document.getElementById("categoryColorHolder").textContent.trim();
 
-    document.body.style.background = "linear-gradient(to right," + courseColorHexCode + ", "  + categoryColorHexCode + "67, " + courseColorHexCode + ")";
+    document.body.style.background = "linear-gradient(to right," + courseColorHexCode + ", " + categoryColorHexCode + "67, " + courseColorHexCode + ")";
 
     let navText = document.getElementsByClassName("nav-text");
-    for(var i = 0; i < navText.length; i++){
+    for (var i = 0; i < navText.length; i++) {
         navText[i].style.color = categoryColorHexCode;
     }
 
-var categorySelector = document.getElementById("category-selector")
-    categorySelector.addEventListener("change", ()=>{
-        var options = categorySelector.querySelectorAll("option"), 
+    var categorySelector = document.getElementById("category-selector")
+    categorySelector.addEventListener("change", () => {
+        var options = categorySelector.querySelectorAll("option"),
             selectedValue;
 
-        options.forEach(option =>{ 
-            if(option.selected) selectedValue = option.value;
+        options.forEach(option => {
+            if (option.selected) selectedValue = option.value;
         })
         document.getElementById("add-category-accordian").style.display = (selectedValue == "New") ? "block" : "none"
     })
