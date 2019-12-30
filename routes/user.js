@@ -52,5 +52,45 @@ router.get("/user/logout", function(req, res){
 })
 //==========================================
 
+
+//USER EDIT - - - - //Renders the page with the form to edit an account
+router.get("/user/edit", isLoggedIn, (req, res)=> res.render("user/edit"))
+
+//USER EDIT - - - - Processes the information from the 'User Edit' form
+router.put("/user/:id/edit", isLoggedIn, (req, res)=>{
+    User.findByIdAndUpdate(req.params.id, req.body.user, (errorUpdatingUser, updatedUser)=>{
+        if(errorUpdatingUser)
+            console.log("There has been an error updating the user... " + errorUpdatingUser.message)
+        res.redirect("/courses")
+    })
+})
+
+//Renders page for user to get a password recovery email
+router.get("/user/forgot", isLoggedIn, (req, res)=> {
+
+});
+
+//Renders the page for the user to put in a new password
+
+
+//Deletes the user
+router.delete("/user/:id/delete", (req, res)=>{
+    User.findByIdAndDelete(req.params.id, (errorDeletingUser, deletedUser) =>{
+        if(errorDeletingUser){
+            console.log("Error deleting the user... " + errorDeletingUser.message);
+        }
+        res.redirect("/");
+    })
+})
+
 //Gives other files access to these routes 
 module.exports = router;
+
+//A middleware that goes on routes that I only want LOGGED IN users to enter.
+function isLoggedIn(req, res, next) {
+    //If the user is not logged in, they will be redirected to the login in page
+    if (req.isAuthenticated())
+        return next();
+    else
+        res.redirect("/user/login");
+}
