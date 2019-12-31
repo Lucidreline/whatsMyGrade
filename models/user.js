@@ -7,27 +7,21 @@ var userSchema = new mongoose.Schema({
     username: {type: String, unique: true, required: true},
     resetPasswordToken: String,
     resetPasswordExpires: Date,
-
-    //The actual password is not saved here. The password is hashed by mongoose passport.
-    password: String,
-    //All the courses associated with the user.
-    courses: [
+    password: String, //The actual password is not saved here. The password is hashed by mongoose passport.
+    courses: [     //All the courses associated with the user.
         {
-            //the Course's mongoose ID
-            type: mongoose.Schema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId, //the Course's mongoose ID
             ref: "Course"
         }
     ],
     courseColors: [{
         courseID: {
-            //the Course's mongoose ID
-            type: mongoose.Schema.Types.ObjectId,
+            type: mongoose.Schema.Types.ObjectId, //the Course's mongoose ID
             ref: "Course"
         },
         color: String
     }]
 })
-
 
 //Alows us to use passwords.. hashes them up or something like that so that the actual password isn't stored in the database
 userSchema.plugin(mongooseLocalPassport);

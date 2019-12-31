@@ -4,22 +4,17 @@ var courseSchema = new mongoose.Schema({
     name: String,
     color: String,
     percentage: Number,
-
-    //list of categories that this Course contains
-    categories: [{
+    categories: [{ //list of categories that this Course contains
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category"
         }
     ],
-    //The id of the person that created the course
-    //Used to only display the courses that you created and no other user's courses
-    author: {
+    author: { //Used to only display the courses that you created and no other user's courses
         //Doing this type/ref is how I can save just the mongoose ID
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId, //The id of the person that created the course
         ref: "User"
     },
-    //All of the grade IDs in the course
-    grades: [
+    grades: [ //All of the grade IDs in the course
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Grade"

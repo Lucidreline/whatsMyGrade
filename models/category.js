@@ -1,13 +1,9 @@
-//Pull in the mongoose package
-var mongoose = require("mongoose");
+var mongoose = require("mongoose"); //Pull in the mongoose package
 
-//Structures the data that categories will have
-var categorySchema = new mongoose.Schema({
+var categorySchema = new mongoose.Schema({ //Structures the data that categories will have
     name: String,
     color: String,
-
-    //This category is X% of your total grade
-    percentWorth: Number,
+    percentWorth: Number, //This category is X% of your total grade
     course: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"

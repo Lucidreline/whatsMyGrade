@@ -1,38 +1,14 @@
-//Brings in the express package
-var express = require("express"),
-    //Uses router just like how we used app in app.js
-    router = express.Router();
+var express = require("express"), //Brings in the express package
+    router = express.Router(); //Uses router just like how we used app in app.js
 
-//Gives this file access to the Course, grade, and category model
+//Gives this file access to the other models
 var Course = require("../models/course"),
     Grade = require("../models/grade"),
     Category = require("../models/category");
 
-//note that grade will not have its own index/show page, they will be displayed on the course show page
+// * NOTE * Grade will not have its own index/show page, they will be displayed on the course show page
 
-//GRADE CREATE - - - - Renders the form to create a new grade
-// router.get("/courses/:id/grade/new", isLoggedIn, (req, res) => {
-//     //Finds the ONE course by using the ID inside of the url
-//     Course.findOne({ _id: req.params.id }, (foundCourseError, foundCourse) => {
-//         if (foundCourseError) {
-//             console.log("Was not able to find course!");
-//             res.redirect("/courses");
-//             return;
-//         }
-
-
-//         //Finds a list of Categories that are associated with the course that was just found
-//         Category.find({ course: foundCourse._id }, (foundCategoryError, foundCategories) => {
-//             if (foundCategoryError) {
-//                 console.log("error while finding categories");
-//                 res.redirect("/courses");
-//                 return;
-//             }
-//             res.render("grade/new", { course: foundCourse, categories: foundCategories })
-//         })
-
-//     });
-// })
+// * NOTE * Grades will not have its own create page because you can create a grade from it's courses show page
 
 //GRADE CREATE - - - Processes the information from the 'Grade Create' form
 router.post("/courses/:id/grade/new", isLoggedIn, (req, res) => {
@@ -60,40 +36,28 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res) => {
                     //add the grade percentage:
                     createdGrade.percentage = (createdGrade.pointsRecieved / createdGrade.possiblePoints) * 100;
 
-
-
                     //next we check if the user wants a new category
-                    if (req.body.exsistingCategory.name == "New") {
-                        //creating a new category
+                    if (req.body.exsistingCategory.name == "New") { //if the user is creating a new category
+                        
                         Category.create(req.body.newCategory, (createdCategoryError, createdCategory) => {
                             if (createdCategoryError) {
                                 console.log("Could not create category")
                                 res.redirect("/courses/" + foundCourse._id);
                                 return
                             }
-                            //we give the new category a course ID to stay in
-                            createdCategory.course = foundCourse;
+                            createdCategory.course = foundCourse; //we give the new category a course ID to stay in
+                            createdCategory.gradesAssociatedWith.push(createdGrade); //Push the newly created grade's ID into the categories list of grades
+                            createdGrade.category     = createdCategory; //We give the new grade the category ID
+                            createdGrade.categoryName = createdCategory.name; //We give the new grade the category name
+                            createdGrade.percentWorth = createdCategory.percentWorth; //The new grade inherits the percentage worth from the category
 
-                            //Push the newly created grade's ID into the categories list of grades
-                            createdCategory.gradesAssociatedWith.push(createdGrade);
-
-                            //We give the new grade the category
-                            createdGrade.category = createdCategory;
-                            createdGrade.categoryName = createdCategory.name;
-
-                            createdGrade.percentWorth = createdCategory.percentWorth;
-
-                            //and we push the new category into the courses list of categories
-                            foundCourse.categories.push(createdCategory);
-
-                            createdGrade.categoryColor = createdCategory.color;
+                            foundCourse.categories.push(createdCategory); //and we push the new category into the courses list of categories
+                            createdGrade.categoryColor = createdCategory.color; //New grade inherits the color from the category
 
                             SaveObjectsToDataBaseAndRedirect([foundCourse, createdCategory, createdGrade], res, "/courses/" + foundCourse._id, createdGrade)
-
                         })
-                    } else {
-                        //if we are using an pre-exsisting category
-
+                    } else { //if we are using an pre-exsisting category
+                
                         //we recieve the pre-exsisting category by looking it up using BOTH the name and course
                         Category.findOne({ name: req.body.exsistingCategory.name, course: foundCourse._id }, (FoundCategoryError, foundCategory) => {
                             if (FoundCategoryError) {
@@ -102,16 +66,12 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res) => {
                                 return
                             }
 
-                            //We put the newly created grade in the category's list of grades
-                            foundCategory.gradesAssociatedWith.push(createdGrade);
-                            //we put the pre-exsisting category into the grade
-                            createdGrade.category = foundCategory;
-                            createdGrade.categoryName = foundCategory.name;
-
-
-                            createdGrade.percentWorth = foundCategory.percentWorth
-
-                            createdGrade.categoryColor = foundCategory.color;
+                            foundCategory.gradesAssociatedWith.push(createdGrade); //We put the newly created grade in the category's list of grades
+                            
+                            createdGrade.category     = foundCategory; //we put the pre-exsisting category into the grade
+                            createdGrade.categoryName = foundCategory.name; //the new grade gets the name of the pre-exsisting category
+                            createdGrade.percentWorth = foundCategory.percentWorth //The new grade inherits the percentage worth from the pre-exsisting category
+                            createdGrade.categoryColor = foundCategory.color; //The new grade inherits the color from the pre-exsisting category
 
                             SaveObjectsToDataBaseAndRedirect([foundCourse, foundCategory, createdGrade], res, "/courses/" + foundCourse._id, createdGrade)
                         })
@@ -121,7 +81,6 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res) => {
         }
     })
 })
-
 
 //Grade EDIT - - - - Renders the edit form to edit a grade
 router.get("/courses/:CourseID/grade/:gradeID/edit", isLoggedIn, (req, res) => {
@@ -146,6 +105,7 @@ router.get("/courses/:CourseID/grade/:gradeID/edit", isLoggedIn, (req, res) => {
                     res.redirect("/courses");
                     return;
                 }
+                // load the grade edit page along with information about which course and category the grade belongs to
                 res.render("grade/edit", { course: foundCourse, categories: foundCategories, grade: foundGrade });
             })
 

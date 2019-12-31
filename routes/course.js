@@ -1,19 +1,15 @@
-//Brings in the express package
-var express = require("express"),
-    //Gets Express's router, Just like how we used the variable name app insode of app.js
-    router = express.Router();
+var express = require("express"), //Brings in the express package
+    router = express.Router(); //Gets Express's router, Just like how we used the variable name app insode of app.js
 
-//loads in the course and Grade model.
+//loads the other models.
 var Category = require("../models/category"),
     Course = require("../models/course"),
     Grade = require("../models/grade");
 
 //Index page, lists all the courses created by the logged in user
 router.get("/courses", isLoggedIn, async (req, res)=>{
-    //finds all the courses that are made by the author
-    Course.find({author: req.user._id}, (err, foundCourses)=>{
-        //makes sure there is no error in doing so. If there is, the website will be redirected to the home page
-        if(err){
+    Course.find({author: req.user._id}, (err, foundCourses)=>{ //finds all the courses that are made by the author
+        if(err){ //makes sure there is no error in doing so. If there is, the website will be redirected to the home page
             console.log("Error finding courses for user: " + req.user);
             res.redirect("/");
             return;
@@ -80,32 +76,33 @@ router.get("/courses/:id", isLoggedIn, (req, res)=>{
 
 //Renders the edit page
 router.get("/courses/:id/edit", isLoggedIn, (req, res)=>{
-    Course.findById(req.params.id, (errorFindingCourse, foundCourse)=>{
+    Course.findById(req.params.id, (errorFindingCourse, foundCourse)=>{ //Find the course that you want to edit from the ID that is in the url
         if(errorFindingCourse || !foundCourse){
             console.log("Error Finding: " + foundCourse);
             res.redirect("/courses");
             return;
         }
-        res.render("course/edit", {course: foundCourse})
+        res.render("course/edit", {course: foundCourse}) //Loads the course edit field with the found course's information (in order to have the inputs pre filled)
     })
 })
 
 //Edits the course
 router.put("/courses/:id/edit", isLoggedIn, (req,res)=>{
-    Course.findByIdAndUpdate(req.params.id, req.body.course, (errorUpdatingCourse, updatedCourse)=>{
-        if(errorUpdatingCourse){
+    Course.findByIdAndUpdate(req.params.id, req.body.course, (errorUpdatingCourse, updatedCourse)=>{ //Finds the course by its ID
+        if(errorUpdatingCourse || !updatedCourse){ //if there is an error finding the course or if it can not be
             console.log("Can not update course");
             res.redirect("/courses");
             return;
         }
-        //change color in the users course color list
-        for (let i = 0; i < req.user.courseColors.length; i++) {
+
+        //The following code not relating to the course, it is just to change the color on the course page background
+        for (let i = 0; i < req.user.courseColors.length; i++) { //change color in the users course color list
             if(req.user.courseColors[i].courseID.toString() == updatedCourse._id.toString()){
                 req.user.courseColors[i].color = req.body.course.color;
                 break;
             }            
         }
-        req.user.save((errorSaving, savedUser)=>{
+        req.user.save((errorSaving, savedUser)=>{ //Saves the user so that the new color can be saved on the course colo rlist
             if(errorSaving){
                 console.log("Could not save user after updating course! :(");
                 res.redirect("/course");
@@ -117,18 +114,17 @@ router.put("/courses/:id/edit", isLoggedIn, (req,res)=>{
 })
 
 router.delete("/courses/:id/delete", isLoggedIn, (req, res)=>{
-
-    Course.findByIdAndRemove(req.params.id, (errordeletingCourse, deletedCourse)=>{
-        for (let i = 0; i < req.user.courseColors.length; i++) {
+    Course.findByIdAndRemove(req.params.id, (errordeletingCourse, deletedCourse)=>{ //Deletes the course from the database
+        for (let i = 0; i < req.user.courseColors.length; i++) { //goes through the colors from the courses page background and deletes the one that belonged to this course
             if(req.user.courseColors[i].courseID.toString() == deletedCourse._id.toString()){
                 req.user.courseColors.splice(i, 1);
                 break;
             }            
         }
 
-        Grade.deleteMany({course: deletedCourse._id}, (errorFindingGrades, deletedGrades)=>{
-            Category.deleteMany({course: deletedCourse._id}, (errorDeletingCategories, deletedcategories)=>{
-                req.user.save((errorSaving, savedUser)=>{
+        Grade.deleteMany({course: deletedCourse._id}, (errorFindingGrades, deletedGrades)=>{ //Deletes all grades that were in the course 
+            Category.deleteMany({course: deletedCourse._id}, (errorDeletingCategories, deletedcategories)=>{ //Deletes all categories inside of all the grades in the course
+                req.user.save((errorSaving, savedUser)=>{ // Saves these changes to the user (The user's course color list was changed)
                     if(errorSaving)
                         console.log("Could not save user deleting course! :(");  
                     res.redirect("/courses/");
@@ -138,13 +134,10 @@ router.delete("/courses/:id/delete", isLoggedIn, (req, res)=>{
     })
 })
 
+module.exports = router; //Allows other files to use the routes in this file
 
-//Allows other files to use the routes in this file
-// I will only use it in app.js
-module.exports = router;
 
-//A middleware that goes on routes that I only want LOGGED IN users to enter.
-function isLoggedIn(req, res, next){
+function isLoggedIn(req, res, next){ //A middleware that goes on routes that I only want LOGGED IN users to enter.
     //If the user is not logged in, they will be redirected to the login in page
     if(req.isAuthenticated())
         return next();

@@ -3,24 +3,19 @@ const mongoose = require("mongoose");
 
 
 var gradeSchema = new mongoose.Schema({
-    name: String,
-    //The category that the grade falls into. Ex. Exams, quizes, Assignments.
-    category: {
-        //Saves the categorie's Mongoose ID
+    name: String, //The category that the grade falls into. Ex. Exams, quizes, Assignments.
+    category: { //Saves the categorie's Mongoose ID
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category"
     },
     categoryName: String,
     pointsRecieved: Number,
-    //The max ammount of points that can be recieved (not incuding extra credit)
-    possiblePoints: Number,
+    possiblePoints: Number, //The max ammount of points that can be recieved (not incuding extra credit)
     percentWorth: Number,
     percentage: Number,
-    coursePercentAfterThisGradeIsadded: Number,
+    coursePercentAfterThisGradeIsadded: Number, //After this grade was added, the course grade percentage changed to this
     categoryColor: String,
-    
-    // The course that the grade belongs to.
-    course: {
+    course: { // The course that the grade belongs to.
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course"
     }
