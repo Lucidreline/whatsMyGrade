@@ -3,8 +3,10 @@ var mongooseLocalPassport = require("passport-local-mongoose");
 
 var userSchema = new mongoose.Schema({
     firstName: String,
-    email:String,
-    username: String,
+    email:{type: String, unique: true, required: true},
+    username: {type: String, unique: true, required: true},
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
 
     //The actual password is not saved here. The password is hashed by mongoose passport.
     password: String,

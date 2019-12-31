@@ -1,0 +1,30 @@
+<% include ../partials/header %>
+
+<section id="user-forms">
+    <div class="form-wrapper">
+        <header class='form-head'>
+            <h2>Reset Password</h2>
+        </header>
+        <form action="/user/login" method="POST">
+            <div class="form-row">
+                <div class="left-form-box">
+                    <label for="username">New Password:</label>
+                </div>
+                <div class="right-form-box">
+                    <input class="under-line-input" type="text" name="password" placeholder="New Password" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="left-form-box">
+                    <label for="username">Confirm Password:</label>
+                </div>
+                <div class="right-form-box">
+                    <input class="under-line-input" type="text" name="password" placeholder="Confirm Password" required>
+                </div>
+            </div>
+            <button class="submit-btn" type="submit">Update Password</button>
+        </form>
+    </div>
+</section>
+
+<% include ../partials/footer %>

@@ -1,0 +1,22 @@
+<% include ../partials/header %>
+
+<section id="user-forms">
+    <div class="form-wrapper">
+        <header class='form-head'>
+            <h2>Forgot Password</h2>
+        </header>
+        <form action="/user/forgot" method="POST">
+            <div class="form-row">
+                <div class="left-form-box">
+                    <label for="username">Email:</label>
+                </div>
+                <div class="right-form-box">
+                    <input class="under-line-input" type="text" name="email" placeholder="Email" required>
+                </div>
+            </div>
+            <button class="submit-btn" type="submit">Reset Password</button>
+        </form>
+    </div>
+</section>
+
+<% include ../partials/footer %>

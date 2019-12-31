@@ -1,9 +1,17 @@
+require("dotenv").config();
 //Imports the pasports and express packages.
     //Passport allows us to use user authentication.
 var localStrategy = require("passport-local"),
     passport = require("passport"),
     express = require("express"),
     router = express.Router()
+
+//Used for password recovery
+var api_key = process.env.MAILGUN_API_KEY,
+    domain = process.env.MAILGUN_DOMAIN,
+    mailgun = require('mailgun-js')({apiKey: api_key, domain: domain}),
+    async = require("async"),
+    crypto = require("crypto")
 
 //Gives this file access to the user model
 var User = require("../models/user");
@@ -66,12 +74,95 @@ router.put("/user/:id/edit", isLoggedIn, (req, res)=>{
 })
 
 //Renders page for user to get a password recovery email
-router.get("/user/forgot", isLoggedIn, (req, res)=> {
+router.get("/user/forgot", (req, res)=> res.render("user/forgot"));
 
-});
+//Processes information from the forgot form
+router.post("/user/forgot", (req, res)=>{
+    async.waterfall([
+        function(done){
+            crypto.randomBytes(20, (err, buf)=>{
+                var token = buf.toString("hex")
+                done(err, token);
+            });
+        },
+        function(token, done){
+            User.findOne({email: req.body.email}, (errorFindingUser, foundUser)=>{
+                //If we were not able to find a user with the given email
+                if(!foundUser){
+                    console.log("NO Accounts with that email: " + req.body.email);
+                    return res.redirect('/user/forgot');
+                }
+    
+                //if we did find the user
+                foundUser.resetPasswordToken = token;
+                foundUser.resetPasswordExpires = Date.now() + 3600000
+    
+                foundUser.save((err)=>{
+                    done(err, token, foundUser);
+                })
+            })
+        },
+        function(token, foundUser, done){
+            var mailData = {
+                from: "What's My Grade <whatsmygradeapp@gmail.com>",
+                to: foundUser.email,
+                subject: 'Password Reset',
+                text: "Hi There,\nYou're getting this email because you have requested to change your password on What's My Grade.\nClick the following link (or copy and paste it into your browser) to finish resetting your password." + 
+                "\n\nhttp://192.168.1.156:8080/user/reset/" + token + "\n\n" +
+                "This link will only work for the next hour. You can reply to this email with any questions or concerns you may have." + 
+                "\n\nBest,\nWhat's My Grade"
+              };
+
+              mailgun.messages().send(mailData, function (error, body) {
+                if(error){
+                    console.log(error);
+                    return;
+                }
+              console.log(body);
+              res.redirect("/user/forgot")
+            });
+        }
+    ],
+    function(err){
+        console.log("Got here")
+        if(err){
+            return console.log(err);
+        }
+        res.redirect("/user/forgot")
+    }
+    )
+})
 
 //Renders the page for the user to put in a new password
+router.get("/user/reset/:token", (req, res)=>{
+    User.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}}, (err, user)=>{
+        if(!user){
+            console.log("Password token is invalid or expired");
+            return res.redirect("/user/forgot");
+        }
+        res.render("user/reset", {token: req.params.token});
+    })
+})
 
+//Processes the new password
+router.post("/reset/:token", (req, res)=>{
+    User.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}}, (err, foundUser)=>{
+        if(!user){
+            console.log("Password token is invalid or expired");
+            return res.redirect("back");
+        }
+        if(req.body.password === req.body.confirm){
+            foundUser.setPassword(req.body.password, (err)=>{
+                foundUser.resetPasswordExpires = undefined;
+                foundUser.resetPasswordToken = undefined
+
+                foundUser.save(err =>{
+                    res.redirect("/courses");
+                })
+            })
+        }
+    })
+})
 
 //Deletes the user
 router.delete("/user/:id/delete", (req, res)=>{
