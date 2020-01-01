@@ -12,6 +12,7 @@ router.get("/courses", middlware.isLoggedIn, async (req, res)=>{
     Course.find({author: req.user._id}, (err, foundCourses)=>{ //finds all the courses that are made by the author
         if(err){ //makes sure there is no error in doing so. If there is, the website will be redirected to the home page
             console.log("Error finding courses for user: " + req.user);
+            req.flash("error", "Oops, we were not able to find your courses. " + err.message);
             res.redirect("/");
             return;
         }
@@ -29,6 +30,7 @@ router.post("/courses/new", middlware.isLoggedIn, (req, res)=>{
     Course.create(req.body.course, (err, createdCourse)=>{
         if(err){
             console.log("Error creating: " + req.body.course);
+            req.flash("error", "Oops, we were not able to create your courses. " + err.message);
             res.redirect("/courses");
             return;
         }
@@ -40,7 +42,10 @@ router.post("/courses/new", middlware.isLoggedIn, (req, res)=>{
         //Here im saving both the user and course. I placed the redirect inside of the 
         // nested call back so that the app wont redirect before both the course and user are saved
         createdCourse.save((error, savedCourse)=>{
-            req.user.save((errors, saveduser)=>res.redirect("/courses/" + createdCourse._id)) 
+            req.user.save((errors, saveduser)=>{
+                req.flash("success", "Successfully Created " + createdCourse.name)
+                res.redirect("/courses/" + createdCourse._id)
+            }) 
         })
     })
 })
@@ -52,6 +57,7 @@ router.get("/courses/:id", middlware.isLoggedIn, (req, res)=>{
         //if the course is not found, the website is redirected to the course index page
         if(err){
             console.log("Can not find the course with the id: " + req.params.id);
+            req.flash("error", "Oops, we were not able to find your course. " + err.message);
             res.redirect("/courses");
             return;
         }
@@ -60,12 +66,14 @@ router.get("/courses/:id", middlware.isLoggedIn, (req, res)=>{
             //If no grades if found, we will redirect back to the course page
             if(error){
                 console.log("Can not find grades in the course " + foundCourse)
+                req.flash("error", "Oops, we were not able to find your course's grades. " + error.message);
                 res.redirect("/courses");
                 return
             }
             Category.find({ course: foundCourse._id }, (foundCategoryError, foundCategories) => {
                 if (foundCategoryError) {
                     console.log("error while finding categories");
+                    req.flash("error", "Oops, we were not able to find your course's Categories. " + foundCategoryError.message);
                     res.redirect("/courses");
                     return;
                 }
@@ -80,6 +88,7 @@ router.get("/courses/:id/edit", middlware.isLoggedIn, (req, res)=>{
     Course.findById(req.params.id, (errorFindingCourse, foundCourse)=>{ //Find the course that you want to edit from the ID that is in the url
         if(errorFindingCourse || !foundCourse){
             console.log("Error Finding: " + foundCourse);
+            req.flash("error", "Oops, we were not able to load the edit page. " + errorFindingCourse.message);
             res.redirect("/courses");
             return;
         }
@@ -92,6 +101,7 @@ router.put("/courses/:id/edit", middlware.isLoggedIn, (req,res)=>{
     Course.findByIdAndUpdate(req.params.id, req.body.course, (errorUpdatingCourse, updatedCourse)=>{ //Finds the course by its ID
         if(errorUpdatingCourse || !updatedCourse){ //if there is an error finding the course or if it can not be
             console.log("Can not update course");
+            req.flash("error", "Oops, we were not able to update your course. " + errorUpdatingCourse.message);
             res.redirect("/courses");
             return;
         }
@@ -109,13 +119,21 @@ router.put("/courses/:id/edit", middlware.isLoggedIn, (req,res)=>{
                 res.redirect("/course");
                 return;
             }
+            req.flash("success", updatedCourse.name +" has successfully updated")
             res.redirect("/courses/" + updatedCourse._id);
         })
     })
 })
 
+//Deletes the course!
 router.delete("/courses/:id/delete", middlware.isLoggedIn, (req, res)=>{
     Course.findByIdAndRemove(req.params.id, (errordeletingCourse, deletedCourse)=>{ //Deletes the course from the database
+        if(errordeletingCourse){
+            console.log("Unable to delete course. " + errordeletingCourse.message)
+            req.flash("error", "Oops, we were not able to delete your course. " + errorUpdatingCourse.message);
+            res.redirect("/courses/");
+            return
+        }
         for (let i = 0; i < req.user.courseColors.length; i++) { //goes through the colors from the courses page background and deletes the one that belonged to this course
             if(req.user.courseColors[i].courseID.toString() == deletedCourse._id.toString()){
                 req.user.courseColors.splice(i, 1);
@@ -123,11 +141,23 @@ router.delete("/courses/:id/delete", middlware.isLoggedIn, (req, res)=>{
             }            
         }
 
-        Grade.deleteMany({course: deletedCourse._id}, (errorFindingGrades, deletedGrades)=>{ //Deletes all grades that were in the course 
+        Grade.deleteMany({course: deletedCourse._id}, (errorDeletingGrades, deletedGrades)=>{ //Deletes all grades that were in the course 
+            if(errorDeletingGrades){
+                console.log("was able to delete the course but not the grades within")
+                res.redirect("/courses/");
+                return
+            }
             Category.deleteMany({course: deletedCourse._id}, (errorDeletingCategories, deletedcategories)=>{ //Deletes all categories inside of all the grades in the course
+                if(errorDeletingCategories){
+                    console.log("The grades were deleted but the categories were not")
+                    res.redirect("/courses/")
+                }
                 req.user.save((errorSaving, savedUser)=>{ // Saves these changes to the user (The user's course color list was changed)
-                    if(errorSaving)
-                        console.log("Could not save user deleting course! :(");  
+                    if(errorSaving){
+                        console.log("Could not save the user with the deleted course! :(");                        
+                    }else{
+                        req.flash("success", "Successfully deleted " + deletedCourse.name)
+                    }
                     res.redirect("/courses/");
                 })
             })
