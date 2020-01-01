@@ -4,14 +4,16 @@ var express = require("express"), //Brings in the express package
 //Gives this file access to the other models
 var Course = require("../models/course"),
     Grade = require("../models/grade"),
-    Category = require("../models/category");
+    Category = require("../models/category"),
+    middlware = require("../middleware") //We should require middleware/index.js but since the file is called index, this line will automaticly look for an index to require
+
 
 // * NOTE * Grade will not have its own index/show page, they will be displayed on the course show page
 
 // * NOTE * Grades will not have its own create page because you can create a grade from it's courses show page
 
 //GRADE CREATE - - - Processes the information from the 'Grade Create' form
-router.post("/courses/:id/grade/new", isLoggedIn, (req, res) => {
+router.post("/courses/:id/grade/new", middlware.isLoggedIn, (req, res) => {
     //Pulls the One course that is found in the url
     Course.findOne({ _id: req.params.id }, (foundCourseError, foundCourse) => {
         if (foundCourseError) {
@@ -83,7 +85,7 @@ router.post("/courses/:id/grade/new", isLoggedIn, (req, res) => {
 })
 
 //Grade EDIT - - - - Renders the edit form to edit a grade
-router.get("/courses/:CourseID/grade/:gradeID/edit", isLoggedIn, (req, res) => {
+router.get("/courses/:CourseID/grade/:gradeID/edit", middlware.isLoggedIn, (req, res) => {
     Course.findOne({ _id: req.params.CourseID }, (foundCourseError, foundCourse) => {
         if (foundCourseError) {
             console.log("Was not able to find course!");
@@ -115,7 +117,7 @@ router.get("/courses/:CourseID/grade/:gradeID/edit", isLoggedIn, (req, res) => {
 })
 
 //GRADE EDIT - - - - Processes the information from the 'Grade Edit' form
-router.put("/courses/:CourseID/grade/:gradeID/edit", (req, res) => {
+router.put("/courses/:CourseID/grade/:gradeID/edit", middlware.isLoggedIn, (req, res) => {
 
     Grade.findById(req.params.gradeID, req.body.grade, async (errorUpdatingGrade, updatedGrade) => {
         updatedGrade.name = req.body.grade.name
@@ -200,7 +202,7 @@ router.put("/courses/:CourseID/grade/:gradeID/edit", (req, res) => {
 })
 
 //Grade Delete - - - - Removes the current grade from the database along with its ID from the course and category
-router.delete("/courses/:CourseID/grade/:gradeID/delete", (req, res) => {
+router.delete("/courses/:CourseID/grade/:gradeID/delete", middlware.isLoggedIn, (req, res) => {
     try {
         Grade.findByIdAndRemove(req.params.gradeID, (errorDestroyingGrade, destroyedGrade) => {
             Course.findById(req.params.CourseID, (errorFindingCourse, foundCourse) => {
@@ -224,9 +226,7 @@ router.delete("/courses/:CourseID/grade/:gradeID/delete", (req, res) => {
     }
 })
 
-//Allows other files to use the routes in this file
-// I will only use it in app.js
-module.exports = router;
+module.exports = router; //Allows other files to use the routes in this file
 
 // ======== FUNCTIONS =========
 async function SaveObjectsToDataBaseAndRedirect(_objectsToSave, _res, _redirectString) {
@@ -344,12 +344,4 @@ function averageOfArray(_arr) {
     sum += _arr[i];
     
     return sum / _arr.length;
-}
-//A middleware that goes on routes that I only want LOGGED IN users to enter.
-function isLoggedIn(req, res, next) {
-    //If the user is not logged in, they will be redirected to the login in page
-    if (req.isAuthenticated())
-        return next();
-    else
-        res.redirect("/user/login");
 }

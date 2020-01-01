@@ -1,8 +1,8 @@
-require("dotenv").config();
-//Imports the pasports and express packages.
-    //Passport allows us to use user authentication.
-var localStrategy = require("passport-local"),
-    passport = require("passport"),
+require("dotenv").config(); //gives us access to our .env file
+
+var localStrategy = require("passport-local"), //Imports the pasports and express packages.
+    middlware = require("../middleware"), //We should require middleware/index.js but since the file is called index, this line will automaticly look for an index to require
+    passport = require("passport"), //Passport allows us to use user authentication.
     express = require("express"),
     router = express.Router()
 
@@ -10,11 +10,10 @@ var localStrategy = require("passport-local"),
 var api_key = process.env.MAILGUN_API_KEY,
     domain = process.env.MAILGUN_DOMAIN,
     mailgun = require('mailgun-js')({apiKey: api_key, domain: domain}),
-    async = require("async"),
-    crypto = require("crypto")
+    crypto = require("crypto"),
+    async = require("async")
 
-//Gives this file access to the user model
-var User = require("../models/user");
+var User = require("../models/user"); //Gives this file access to the user model
 
 //Not sure what these do exactly, but I know they contribute to the user's logging in
 passport.use(new localStrategy(User.authenticate()))
@@ -62,10 +61,10 @@ router.get("/user/logout", function(req, res){
 
 
 //USER EDIT - - - - //Renders the page with the form to edit an account
-router.get("/user/edit", isLoggedIn, (req, res)=> res.render("user/edit"))
+router.get("/user/edit", middlware.isLoggedIn, (req, res)=> res.render("user/edit"))
 
 //USER EDIT - - - - Processes the information from the 'User Edit' form
-router.put("/user/:id/edit", isLoggedIn, (req, res)=>{
+router.put("/user/:id/edit", middlware.isLoggedIn, (req, res)=>{
     User.findByIdAndUpdate(req.params.id, req.body.user, (errorUpdatingUser, updatedUser)=>{
         if(errorUpdatingUser)
             console.log("There has been an error updating the user... " + errorUpdatingUser.message)
@@ -165,7 +164,7 @@ router.post("/reset/:token", (req, res)=>{
 })
 
 //Deletes the user
-router.delete("/user/:id/delete", (req, res)=>{
+router.delete("/user/:id/delete", middlware.isLoggedIn, (req, res)=>{
     User.findByIdAndDelete(req.params.id, (errorDeletingUser, deletedUser) =>{
         if(errorDeletingUser){
             console.log("Error deleting the user... " + errorDeletingUser.message);
@@ -174,14 +173,4 @@ router.delete("/user/:id/delete", (req, res)=>{
     })
 })
 
-//Gives other files access to these routes 
-module.exports = router;
-
-//A middleware that goes on routes that I only want LOGGED IN users to enter.
-function isLoggedIn(req, res, next) {
-    //If the user is not logged in, they will be redirected to the login in page
-    if (req.isAuthenticated())
-        return next();
-    else
-        res.redirect("/user/login");
-}
+module.exports = router; //Gives other files access to these routes 

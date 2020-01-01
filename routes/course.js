@@ -4,10 +4,11 @@ var express = require("express"), //Brings in the express package
 //loads the other models.
 var Category = require("../models/category"),
     Course = require("../models/course"),
-    Grade = require("../models/grade");
+    Grade = require("../models/grade"),
+    middlware = require("../middleware") //We should require middleware/index.js but since the file is called index, this line will automaticly look for an index to require
 
 //Index page, lists all the courses created by the logged in user
-router.get("/courses", isLoggedIn, async (req, res)=>{
+router.get("/courses", middlware.isLoggedIn, async (req, res)=>{
     Course.find({author: req.user._id}, (err, foundCourses)=>{ //finds all the courses that are made by the author
         if(err){ //makes sure there is no error in doing so. If there is, the website will be redirected to the home page
             console.log("Error finding courses for user: " + req.user);
@@ -20,10 +21,10 @@ router.get("/courses", isLoggedIn, async (req, res)=>{
 })
 
 //Renders the form to create a new course
-router.get("/courses/new", isLoggedIn, (req, res)=> res.render("course/new"))
+router.get("/courses/new", middlware.isLoggedIn, (req, res)=> res.render("course/new"))
 
 //Recieves the data that was entered in the 'New Course' form
-router.post("/courses/new", isLoggedIn, (req, res)=>{
+router.post("/courses/new", middlware.isLoggedIn, (req, res)=>{
     //creates the course using the forms data
     Course.create(req.body.course, (err, createdCourse)=>{
         if(err){
@@ -45,7 +46,7 @@ router.post("/courses/new", isLoggedIn, (req, res)=>{
 })
 
 //Show page, more detailed page of a course
-router.get("/courses/:id", isLoggedIn, (req, res)=>{
+router.get("/courses/:id", middlware.isLoggedIn, (req, res)=>{
     //uses the URL to get an ID and find the course with that matching ID
     Course.findById(req.params.id, (err, foundCourse)=>{
         //if the course is not found, the website is redirected to the course index page
@@ -75,7 +76,7 @@ router.get("/courses/:id", isLoggedIn, (req, res)=>{
 })
 
 //Renders the edit page
-router.get("/courses/:id/edit", isLoggedIn, (req, res)=>{
+router.get("/courses/:id/edit", middlware.isLoggedIn, (req, res)=>{
     Course.findById(req.params.id, (errorFindingCourse, foundCourse)=>{ //Find the course that you want to edit from the ID that is in the url
         if(errorFindingCourse || !foundCourse){
             console.log("Error Finding: " + foundCourse);
@@ -87,7 +88,7 @@ router.get("/courses/:id/edit", isLoggedIn, (req, res)=>{
 })
 
 //Edits the course
-router.put("/courses/:id/edit", isLoggedIn, (req,res)=>{
+router.put("/courses/:id/edit", middlware.isLoggedIn, (req,res)=>{
     Course.findByIdAndUpdate(req.params.id, req.body.course, (errorUpdatingCourse, updatedCourse)=>{ //Finds the course by its ID
         if(errorUpdatingCourse || !updatedCourse){ //if there is an error finding the course or if it can not be
             console.log("Can not update course");
@@ -113,7 +114,7 @@ router.put("/courses/:id/edit", isLoggedIn, (req,res)=>{
     })
 })
 
-router.delete("/courses/:id/delete", isLoggedIn, (req, res)=>{
+router.delete("/courses/:id/delete", middlware.isLoggedIn, (req, res)=>{
     Course.findByIdAndRemove(req.params.id, (errordeletingCourse, deletedCourse)=>{ //Deletes the course from the database
         for (let i = 0; i < req.user.courseColors.length; i++) { //goes through the colors from the courses page background and deletes the one that belonged to this course
             if(req.user.courseColors[i].courseID.toString() == deletedCourse._id.toString()){
@@ -135,12 +136,3 @@ router.delete("/courses/:id/delete", isLoggedIn, (req, res)=>{
 })
 
 module.exports = router; //Allows other files to use the routes in this file
-
-
-function isLoggedIn(req, res, next){ //A middleware that goes on routes that I only want LOGGED IN users to enter.
-    //If the user is not logged in, they will be redirected to the login in page
-    if(req.isAuthenticated())
-        return next();
-    else
-        res.redirect("/user/login");
-}
