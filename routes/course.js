@@ -29,7 +29,7 @@ router.post("/courses/new", middlware.isLoggedIn, (req, res)=>{
     Course.create(req.body.course, (err, createdCourse)=>{
         if(err){
             console.log("Error creating: " + req.body.course);
-            req.flash("error", "Oops, we were not able to create your courses. " + err.message);
+            req.flash("error", "Oops, " + err.message);
             return res.redirect("/courses");
         }
         createdCourse.author = req.user;
@@ -41,7 +41,7 @@ router.post("/courses/new", middlware.isLoggedIn, (req, res)=>{
         // nested call back so that the app wont redirect before both the course and user are saved
         createdCourse.save((error, savedCourse)=>{
             req.user.save((errors, saveduser)=>{
-                req.flash("success", "Successfully Created " + createdCourse.name)
+                req.flash("success", "Successfully created " + createdCourse.name)
                 res.redirect("/courses/" + createdCourse._id)
             }) 
         })
@@ -111,7 +111,7 @@ router.put("/courses/:id/edit", middlware.isLoggedIn, (req,res)=>{
                 console.log("Could not save user after updating course! :(");
                 return res.redirect("/course");
             }
-            req.flash("success", updatedCourse.name +" has successfully updated")
+            req.flash("success", req.body.course.name +" has successfully updated")
             res.redirect("/courses/" + updatedCourse._id);
         })
     })

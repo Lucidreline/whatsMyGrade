@@ -53,7 +53,7 @@ button{
 }
 nav{
     min-height: 10vh;
-    padding: 1.5rem;;
+    padding: 1.0rem;
     display: flex;
     width: 90%;
     margin: auto;
@@ -66,6 +66,25 @@ nav ul{
     flex: 1 1 40rem;
     justify-content: space-around;
     list-style: none;
+}
+
+.flash-message{
+    width:90%;
+    margin: auto;
+    text-align: center;
+    border-radius: 10px;
+    font-size: 1.75rem;
+    padding-bottom: .25rem;
+}
+
+.success{
+    /* border: .5rem solid #81ecec; */
+    color: #81ecec;
+}
+
+.error{
+    /* border: .5rem solid #ff6b6b; */
+    color: #fc5c65;
 }
 
 .row{
@@ -99,7 +118,8 @@ nav ul{
     justify-content: center;
     align-items: center;
     text-align: center;
-    animation: zoomAnim 120.5s infinite ease-in-out alternate-reverse;
+
+    background-attachment: fixed;
 }
 .hero h3{
     padding: 2.5rem;
@@ -223,7 +243,7 @@ nav ul{
     width: 90%;
     margin: auto;
     display: flex;
-    min-height: 50vh;
+    min-height: 61vh;
     align-items: center;
     flex-wrap: wrap;;
 }
@@ -515,12 +535,3 @@ footer p{
     }
 }
 
-@keyframes zoomAnim{
-    50%{
-        background-size: 200%;
-    }
-    100%{
-        background-size: 100%;
-    }
-}
-}

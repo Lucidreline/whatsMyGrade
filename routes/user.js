@@ -35,7 +35,7 @@ router.post("/user/register", (req, res)=>{
         if(err){
             req.flash("error", "Oops, " + err.message)
             console.log("Error registering a new User: " + err.message);
-            return res.render("User/registerLogin");
+            return res.redirect("/user/login");
         }
         //Logs in the new user
         passport.authenticate("local")(req, res, function(){
