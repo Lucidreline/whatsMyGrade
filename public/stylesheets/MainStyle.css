@@ -118,8 +118,8 @@ nav ul{
     justify-content: center;
     align-items: center;
     text-align: center;
-
     background-attachment: fixed;
+
 }
 .hero h3{
     padding: 2.5rem;
@@ -481,9 +481,6 @@ footer{
     background-color: #131c27;
 }
 
-.footer-wrapper{
-    
-}
 
 footer a, footer p{
     display: block;
@@ -499,10 +496,6 @@ footer p{
     margin: 1rem 0;
 }
 
-@media screen and (max-width:507px){
-    
-}
-
 @media only screen and (max-width:822px){
 .left-form-box, .right-form-box{
     text-align: center ;
@@ -510,6 +503,7 @@ footer p{
 .under-line-input{
     text-align: center;
     margin: 0;
+    }
 }
 
 
@@ -534,4 +528,3 @@ footer p{
         font-size: 100%;
     }
 }
-
