@@ -18,15 +18,16 @@ router.post("/courses/:id/grade/new", middlware.isLoggedIn, (req, res) => {
     Course.findOne({ _id: req.params.id }, (foundCourseError, foundCourse) => {
         if (foundCourseError) {
             console.log("Could not find course with ID: " + req.params.id);
-            res.redirect("/courses");
-            return;
+            req.flash("error", "Oops, Your grade was not successfuly added")
+            return res.redirect("/courses");;
         }
         else {
             //After the course is found, the grade is created using the data from the form
             Grade.create(req.body.grade, async (createdGradeError, createdGrade) => {
                 if (createdGradeError) {
                     console.log('Was not able to create the grade');
-                    res.redirect("/courses");
+                    req.flash("error", "Oops, Your grade was not successfuly added")
+                    return res.redirect("/courses");
                 }
                 else {
                     //Pushes the grade into the course's grade list
@@ -44,8 +45,8 @@ router.post("/courses/:id/grade/new", middlware.isLoggedIn, (req, res) => {
                         Category.create(req.body.newCategory, (createdCategoryError, createdCategory) => {
                             if (createdCategoryError) {
                                 console.log("Could not create category")
-                                res.redirect("/courses/" + foundCourse._id);
-                                return
+                                req.flash("error", "Oops, Your grade was not successfuly added")
+                                return res.redirect("/courses/" + foundCourse._id);
                             }
                             createdCategory.course = foundCourse; //we give the new category a course ID to stay in
                             createdCategory.gradesAssociatedWith.push(createdGrade); //Push the newly created grade's ID into the categories list of grades
@@ -64,8 +65,8 @@ router.post("/courses/:id/grade/new", middlware.isLoggedIn, (req, res) => {
                         Category.findOne({ name: req.body.exsistingCategory.name, course: foundCourse._id }, (FoundCategoryError, foundCategory) => {
                             if (FoundCategoryError) {
                                 console.log("Could not find category")
-                                res.redirect("/courses/" + foundCourse._id);
-                                return
+                                req.flash("error", "Oops, Your grade was not successfuly added")
+                                return res.redirect("/courses/" + foundCourse._id);
                             }
 
                             foundCategory.gradesAssociatedWith.push(createdGrade); //We put the newly created grade in the category's list of grades
@@ -85,12 +86,12 @@ router.post("/courses/:id/grade/new", middlware.isLoggedIn, (req, res) => {
 })
 
 //Grade EDIT - - - - Renders the edit form to edit a grade
-router.get("/courses/:CourseID/grade/:gradeID/edit", middlware.isLoggedIn, (req, res) => {
+router.get("/courses/:CourseID/grade/:gradeID/edit", middlware.isLoggedIn, (req, res) => { 
     Course.findOne({ _id: req.params.CourseID }, (foundCourseError, foundCourse) => {
         if (foundCourseError) {
             console.log("Was not able to find course!");
-            res.redirect("/courses");
-            return;
+            req.flash("success", "Not able to successfuly open the edit form");
+            return res.redirect("/courses");
         }
 
 
@@ -98,14 +99,14 @@ router.get("/courses/:CourseID/grade/:gradeID/edit", middlware.isLoggedIn, (req,
         Category.find({ course: foundCourse._id }, (foundCategoryError, foundCategories) => {
             if (foundCategoryError) {
                 console.log("error while finding categories");
-                res.redirect("/courses");
-                return;
+                req.flash("success", "Not able to successfuly open the edit form");
+                return res.redirect("/courses");
             }
             Grade.findById(req.params.gradeID, (gradeFindingError, foundGrade) => {
                 if (gradeFindingError) {
                     console.log("error while finding grade to edit");
-                    res.redirect("/courses");
-                    return;
+                    req.flash("success", "Not able to successfuly open the edit form");
+                    return res.redirect("/courses");
                 }
                 // load the grade edit page along with information about which course and category the grade belongs to
                 res.render("grade/edit", { course: foundCourse, categories: foundCategories, grade: foundGrade });
@@ -120,6 +121,11 @@ router.get("/courses/:CourseID/grade/:gradeID/edit", middlware.isLoggedIn, (req,
 router.put("/courses/:CourseID/grade/:gradeID/edit", middlware.isLoggedIn, (req, res) => {
 
     Grade.findById(req.params.gradeID, req.body.grade, async (errorUpdatingGrade, updatedGrade) => {
+        if(errorUpdatingGrade){
+            console.log("Error finding grade to edit it")
+
+            return res.redirect("/courses/" + req.params.CourseID)
+        }
         updatedGrade.name = req.body.grade.name
         updatedGrade.pointsRecieved = req.body.grade.pointsRecieved
         updatedGrade.possiblePoints = req.body.grade.possiblePoints
@@ -139,15 +145,15 @@ router.put("/courses/:CourseID/grade/:gradeID/edit", middlware.isLoggedIn, (req,
 
             if (errorFindingCourse) {
                 console.log("Could not find course")
-                res.redirect("/courses");
-                return
+                req.flash("error", "Coudn't successfully update your grade")
+                return res.redirect("/courses");
             }
             if (req.body.exsistingCategory.name == "New") {
                 Category.create(req.body.newCategory, (createdCategoryError, createdCategory) => {
                     if (createdCategoryError) {
                         console.log("Could not create category")
-                        res.redirect("/courses/" + foundCourse._id);
-                        return
+                        req.flash("error", "Coudn't successfully update your grade")
+                        return res.redirect("/courses/" + foundCourse._id);
                     }
                     //we give the new category a course ID to stay in
                     createdCategory.course = foundCourse;
@@ -173,8 +179,8 @@ router.put("/courses/:CourseID/grade/:gradeID/edit", middlware.isLoggedIn, (req,
                 Category.findOne({ name: req.body.exsistingCategory.name, course: foundCourse._id }, (FoundCategoryError, foundCategory) => {
                     if (FoundCategoryError) {
                         console.log("Could not find category")
-                        res.redirect("/courses/" + foundCourse._id);
-                        return
+                        req.flash("error", "Coudn't successfully update your grade")
+                        return res.redirect("/courses/" + foundCourse._id);
                     }
 
                     //We put the newly created grade in the category's list of grades
@@ -192,9 +198,6 @@ router.put("/courses/:CourseID/grade/:gradeID/edit", middlware.isLoggedIn, (req,
                     updatedGrade.save((x, y) => {
                         SaveObjectsToDataBaseAndRedirect([foundCourse, foundCategory, updatedGrade], res, "/courses/" + foundCourse._id)
                     })
-
-
-
                 })
             }
         })
@@ -222,7 +225,8 @@ router.delete("/courses/:CourseID/grade/:gradeID/delete", middlware.isLoggedIn, 
         })
     } catch (error) {
         console.log("Error: " + error);
-        res.redirect("/courses/" + req.params.courseID);
+        req.flash("error", "Grade was not successfuly saved");
+        return res.redirect("/courses/" + req.params.courseID);
     }
 })
 
@@ -263,8 +267,6 @@ function SaveObjectToDatabase(_object) {
 function refreshGradesAfterAddedPercentagesValue(_course) {
     return new Promise((resolve, reject) => {
         try {
-                    //gets a list of all the grades in the course
-
             Grade.find({ course: _course._id }, async (errorFindingGrades, foundGrades) => {
 
                 //arrays that I will use to calculate the percentage

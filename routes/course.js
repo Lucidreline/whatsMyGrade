@@ -13,8 +13,7 @@ router.get("/courses", middlware.isLoggedIn, async (req, res)=>{
         if(err){ //makes sure there is no error in doing so. If there is, the website will be redirected to the home page
             console.log("Error finding courses for user: " + req.user);
             req.flash("error", "Oops, we were not able to find your courses. " + err.message);
-            res.redirect("/");
-            return;
+            return res.redirect("/");
         }
         //if no error: Renders the index page and throws in the list of found courses for the ejs file to use
         res.render("course/index", {courseList: foundCourses}) 
@@ -31,8 +30,7 @@ router.post("/courses/new", middlware.isLoggedIn, (req, res)=>{
         if(err){
             console.log("Error creating: " + req.body.course);
             req.flash("error", "Oops, we were not able to create your courses. " + err.message);
-            res.redirect("/courses");
-            return;
+            return res.redirect("/courses");
         }
         createdCourse.author = req.user;
         createdCourse.percentage = 0;
@@ -58,8 +56,7 @@ router.get("/courses/:id", middlware.isLoggedIn, (req, res)=>{
         if(err){
             console.log("Can not find the course with the id: " + req.params.id);
             req.flash("error", "Oops, we were not able to find your course. " + err.message);
-            res.redirect("/courses");
-            return;
+            return res.redirect("/courses");
         }
         //if there is no error: The grades inside of the found course will be searched for
         Grade.find({course: foundCourse._id}, (error, foundGrades)=>{
@@ -67,15 +64,13 @@ router.get("/courses/:id", middlware.isLoggedIn, (req, res)=>{
             if(error){
                 console.log("Can not find grades in the course " + foundCourse)
                 req.flash("error", "Oops, we were not able to find your course's grades. " + error.message);
-                res.redirect("/courses");
-                return
+                return res.redirect("/courses");
             }
             Category.find({ course: foundCourse._id }, (foundCategoryError, foundCategories) => {
                 if (foundCategoryError) {
                     console.log("error while finding categories");
                     req.flash("error", "Oops, we were not able to find your course's Categories. " + foundCategoryError.message);
-                    res.redirect("/courses");
-                    return;
+                    return res.redirect("/courses");
                 }
                 res.render("course/show", {course: foundCourse, grades: foundGrades, categories: foundCategories })
             })
@@ -89,8 +84,7 @@ router.get("/courses/:id/edit", middlware.isLoggedIn, (req, res)=>{
         if(errorFindingCourse || !foundCourse){
             console.log("Error Finding: " + foundCourse);
             req.flash("error", "Oops, we were not able to load the edit page. " + errorFindingCourse.message);
-            res.redirect("/courses");
-            return;
+            return res.redirect("/courses");
         }
         res.render("course/edit", {course: foundCourse}) //Loads the course edit field with the found course's information (in order to have the inputs pre filled)
     })
@@ -102,8 +96,7 @@ router.put("/courses/:id/edit", middlware.isLoggedIn, (req,res)=>{
         if(errorUpdatingCourse || !updatedCourse){ //if there is an error finding the course or if it can not be
             console.log("Can not update course");
             req.flash("error", "Oops, we were not able to update your course. " + errorUpdatingCourse.message);
-            res.redirect("/courses");
-            return;
+            return res.redirect("/courses");
         }
 
         //The following code not relating to the course, it is just to change the color on the course page background
@@ -116,8 +109,7 @@ router.put("/courses/:id/edit", middlware.isLoggedIn, (req,res)=>{
         req.user.save((errorSaving, savedUser)=>{ //Saves the user so that the new color can be saved on the course colo rlist
             if(errorSaving){
                 console.log("Could not save user after updating course! :(");
-                res.redirect("/course");
-                return;
+                return res.redirect("/course");
             }
             req.flash("success", updatedCourse.name +" has successfully updated")
             res.redirect("/courses/" + updatedCourse._id);
@@ -131,8 +123,7 @@ router.delete("/courses/:id/delete", middlware.isLoggedIn, (req, res)=>{
         if(errordeletingCourse){
             console.log("Unable to delete course. " + errordeletingCourse.message)
             req.flash("error", "Oops, we were not able to delete your course. " + errorUpdatingCourse.message);
-            res.redirect("/courses/");
-            return
+            return res.redirect("/courses/");
         }
         for (let i = 0; i < req.user.courseColors.length; i++) { //goes through the colors from the courses page background and deletes the one that belonged to this course
             if(req.user.courseColors[i].courseID.toString() == deletedCourse._id.toString()){
@@ -144,13 +135,12 @@ router.delete("/courses/:id/delete", middlware.isLoggedIn, (req, res)=>{
         Grade.deleteMany({course: deletedCourse._id}, (errorDeletingGrades, deletedGrades)=>{ //Deletes all grades that were in the course 
             if(errorDeletingGrades){
                 console.log("was able to delete the course but not the grades within")
-                res.redirect("/courses/");
-                return
+                return res.redirect("/courses/");
             }
             Category.deleteMany({course: deletedCourse._id}, (errorDeletingCategories, deletedcategories)=>{ //Deletes all categories inside of all the grades in the course
                 if(errorDeletingCategories){
                     console.log("The grades were deleted but the categories were not")
-                    res.redirect("/courses/")
+                    return res.redirect("/courses/")
                 }
                 req.user.save((errorSaving, savedUser)=>{ // Saves these changes to the user (The user's course color list was changed)
                     if(errorSaving){

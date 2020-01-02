@@ -33,32 +33,36 @@ router.post("/user/register", (req, res)=>{
 
     }), req.body.password, function(err, createdUser){
         if(err){
+            req.flash("error", "Oops, " + err.message)
             console.log("Error registering a new User: " + err.message);
             return res.render("User/registerLogin");
         }
         //Logs in the new user
         passport.authenticate("local")(req, res, function(){
-            res.redirect("/courses");
+            req.flash("success", "Welcome to your new account " + req.body.firstName + "!!!")
+            res.redirect("/courses")
         })
     })
 })
 
 //Login ====================================
 //Takes in the data from the login form
-router.post("/user/login", passport.authenticate("local", {
-    //If the password matches, the user is redirected to home, else the login page is refreshed
-    successRedirect: "/courses",
-    failureRedirect: "/user/login"
-}));
-//==========================================
+router.post("/user/login", function (req, res, next) {
+    passport.authenticate("local",
+      {
+        successRedirect: "/courses", //If the password matches, the user is redirected to home
+        failureRedirect: "/user/login", //If the user credentials are wrong, the page will refresh
+        failureFlash: "Oops, either your username or password is incorrect",
+        successFlash: "Welcome back, " + req.body.username + "!"
+      })(req, res);
+  });
 
 //LOG OUT =================================
 router.get("/user/logout", function(req, res){
     req.logOut();
+    req.flash("success", "Successfuly logged out")
     res.redirect("/");
 })
-//==========================================
-
 
 //USER EDIT - - - - //Renders the page with the form to edit an account
 router.get("/user/edit", middlware.isLoggedIn, (req, res)=> res.render("user/edit"))
@@ -66,8 +70,11 @@ router.get("/user/edit", middlware.isLoggedIn, (req, res)=> res.render("user/edi
 //USER EDIT - - - - Processes the information from the 'User Edit' form
 router.put("/user/:id/edit", middlware.isLoggedIn, (req, res)=>{
     User.findByIdAndUpdate(req.params.id, req.body.user, (errorUpdatingUser, updatedUser)=>{
-        if(errorUpdatingUser)
+        if(errorUpdatingUser){
+            req.flash("error", errorUpdatingUser.message)
             console.log("There has been an error updating the user... " + errorUpdatingUser.message)
+        }
+        req.flash("success", "Successfully updated your account!")
         res.redirect("/courses")
     })
 })
@@ -89,6 +96,7 @@ router.post("/user/forgot", (req, res)=>{
                 //If we were not able to find a user with the given email
                 if(!foundUser){
                     console.log("NO Accounts with that email: " + req.body.email);
+                    req.flash("error", "We don't have an account with that email.")
                     return res.redirect('/user/forgot');
                 }
     
@@ -118,6 +126,7 @@ router.post("/user/forgot", (req, res)=>{
                     return;
                 }
               console.log(body);
+              req.flash("success", "A password recovery email has been sent to " + foundUser.email)
               res.redirect("/user/forgot")
             });
         }
@@ -137,6 +146,7 @@ router.get("/user/reset/:token", (req, res)=>{
     User.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}}, (err, user)=>{
         if(!user){
             console.log("Password token is invalid or expired");
+            req.flash("error", "Oops, the password token is invalid or expired.")
             return res.redirect("/user/forgot");
         }
         res.render("user/reset", {token: req.params.token});
@@ -148,6 +158,7 @@ router.post("/reset/:token", (req, res)=>{
     User.findOne({resetPasswordToken: req.params.token, resetPasswordExpires: {$gt: Date.now()}}, (err, foundUser)=>{
         if(!user){
             console.log("Password token is invalid or expired");
+            req.flash("error", "Oops, the password token is invalid or expired.")
             return res.redirect("back");
         }
         if(req.body.password === req.body.confirm){
@@ -156,7 +167,10 @@ router.post("/reset/:token", (req, res)=>{
                 foundUser.resetPasswordToken = undefined
 
                 foundUser.save(err =>{
-                    res.redirect("/courses");
+                    passport.authenticate("local")(req, res, function(){ //loggs in the user
+                        req.flash("success", "Password updated! Glad to have you back!")
+                        res.redirect("/courses")
+                    })
                 })
             })
         }
@@ -167,7 +181,11 @@ router.post("/reset/:token", (req, res)=>{
 router.delete("/user/:id/delete", middlware.isLoggedIn, (req, res)=>{
     User.findByIdAndDelete(req.params.id, (errorDeletingUser, deletedUser) =>{
         if(errorDeletingUser){
+            req.flash("error", "Oops, you're account was not succeffuly deleted.")
             console.log("Error deleting the user... " + errorDeletingUser.message);
+        }
+        else{
+            req.flash("success", "Account deleted. Sorry to see you leave " + deletedUser.firstName + "...")
         }
         res.redirect("/");
     })
