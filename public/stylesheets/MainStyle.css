@@ -132,7 +132,7 @@ nav ul{
 /* Forms */
 #user-forms{
     min-height: 90vh;
-    background: linear-gradient(rgba(0, 0, 0, 0.753),transparent), url('../Photos/Backgrounds/College.jpg');
+    background: linear-gradient(rgba(0, 0, 0, 0.808),transparent), url('../Photos/Backgrounds/College.jpg');
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -141,9 +141,6 @@ nav ul{
     justify-content: space-around;
     flex-wrap: wrap;
 }
-
-
-
 
 .form-head{
     text-align: center;
@@ -168,7 +165,6 @@ nav ul{
     border-bottom: 2px #4c6e97 solid;
 }
 
-
 .name-form, .email-form{
     padding: 3rem;
     text-align: center;
@@ -189,6 +185,10 @@ nav ul{
     padding: 2rem;
     margin-top: 3rem;
     border-radius: 0px 0px 7px 7px;
+}
+
+#forgot-link{
+    font-size: 1.5rem;
 }
 
 #colorViewer{
@@ -399,7 +399,7 @@ nav ul{
 
 
 .form-wrapper{
-    background: rgba(0, 0, 0, 0.404);
+    background: rgba(0, 0, 0, 0.555);
     color: white;
     border-radius: 20px;
     margin: 4rem 2rem;
@@ -472,9 +472,6 @@ select:focus {
 select {
     margin: 0;
 }
-
-
-
 
 /* Footer */
 footer{
