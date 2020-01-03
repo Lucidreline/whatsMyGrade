@@ -15,7 +15,7 @@ var sendGridMail = require('@sendgrid/mail'),
     crypto = require("crypto"),
     async = require("async")
 
-sendGridMail.setApiKey("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")
+sendGridMail.setApiKey(process.env.SENDGRID_API_KEY)
 
 var User = require("../models/user"); //Gives this file access to the user model
 
