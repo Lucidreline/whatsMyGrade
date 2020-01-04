@@ -2,10 +2,11 @@ var express = require("express"), //Brings in the express package
     router = express.Router(); //Uses router just like how we used app in app.js
 
 //Gives this file access to the other models
-var Course = require("../models/course"),
-    Grade = require("../models/grade"),
-    Category = require("../models/category"),
-    middlware = require("../middleware") //We should require middleware/index.js but since the file is called index, this line will automaticly look for an index to require
+var Category = require("../models/category"),
+    Course = require("../models/course"),
+    middlware = require("../middleware"), //We should require middleware/index.js but since the file is called index, this line will automaticly look for an index to require
+    functions = require("../functions"),
+    Grade = require("../models/grade")
 
 
 // * NOTE * Grade will not have its own index/show page, they will be displayed on the course show page
@@ -14,12 +15,23 @@ var Course = require("../models/course"),
 
 //GRADE CREATE - - - Processes the information from the 'Grade Create' form
 router.post("/courses/:id/grade/new", middlware.isLoggedIn, (req, res) => {
+
+    if(req.body.grade.name.trim().length < 1)
+        return functions.showErrorAndRefresh(req, res, "Oops, name must be at least one character")
+
+    if(!(req.body.grade.pointsRecieved))
+        return functions.showErrorAndRefresh(req, res, "Oops, Add how many points you recieved")
+
+    if(!(req.body.grade.possiblePoints))
+        return functions.showErrorAndRefresh(req, res, "Oops, Add how many points you recieved")
+
+
     //Pulls the One course that is found in the url
     Course.findOne({ _id: req.params.id }, (foundCourseError, foundCourse) => {
         if (foundCourseError) {
             console.log("Could not find course with ID: " + req.params.id);
             req.flash("error", "Oops, Your grade was not successfuly added")
-            return res.redirect("/courses");;
+            return res.redirect("/courses");
         }
         else {
             //After the course is found, the grade is created using the data from the form
@@ -41,8 +53,14 @@ router.post("/courses/:id/grade/new", middlware.isLoggedIn, (req, res) => {
 
                     //next we check if the user wants a new category
                     if (req.body.exsistingCategory.name == "New") { //if the user is creating a new category
+                        if(req.body.newCategory.name.trim().length < 1)
+                            return functions.showErrorAndRefresh(req, res, "Oops, name must be at least one character")
+                        if(req.body.newCategory.color.trim() == "")
+                            return functions.showErrorAndRefresh(req, res, "Oops, click a color before moving on ")
+                        if(req.body.newCategory.percentWorth < 1)
+                            return functions.showErrorAndRefresh(req, res, "Oops, percent worth must be atleast 1")
                         
-                        Category.create(req.body.newCategory, (createdCategoryError, createdCategory) => {
+                            Category.create(req.body.newCategory, (createdCategoryError, createdCategory) => {
                             if (createdCategoryError) {
                                 console.log("Could not create category")
                                 req.flash("error", "Oops, Your grade was not successfuly added")
@@ -120,6 +138,15 @@ router.get("/courses/:CourseID/grade/:gradeID/edit", middlware.isLoggedIn, (req,
 //GRADE EDIT - - - - Processes the information from the 'Grade Edit' form
 router.put("/courses/:CourseID/grade/:gradeID/edit", middlware.isLoggedIn, (req, res) => {
 
+    if(req.body.grade.name.trim().length < 1)
+        return functions.showErrorAndRefresh(req, res, "Oops, name must be at least one character")
+
+    if(!(req.body.grade.pointsRecieved))
+        return functions.showErrorAndRefresh(req, res, "Oops, Add how many points you recieved")
+
+    if(!(req.body.grade.possiblePoints))
+        return functions.showErrorAndRefresh(req, res, "Oops, Add how many points you recieved")
+
     Grade.findById(req.params.gradeID, req.body.grade, async (errorUpdatingGrade, updatedGrade) => {
         if(errorUpdatingGrade){
             console.log("Error finding grade to edit it")
@@ -149,6 +176,14 @@ router.put("/courses/:CourseID/grade/:gradeID/edit", middlware.isLoggedIn, (req,
                 return res.redirect("/courses");
             }
             if (req.body.exsistingCategory.name == "New") {
+
+                if(req.body.newCategory.name.trim().length < 1)
+                    return functions.showErrorAndRefresh(req, res, "Oops, name must be at least one character")
+                if(req.body.newCategory.color.trim() == "")
+                    return functions.showErrorAndRefresh(req, res, "Oops, click a color before moving on ")
+                if(req.body.newCategory.percentWorth < 1)
+                    return functions.showErrorAndRefresh(req, res, "Oops, percent worth must be atleast 1")
+
                 Category.create(req.body.newCategory, (createdCategoryError, createdCategory) => {
                     if (createdCategoryError) {
                         console.log("Could not create category")

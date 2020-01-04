@@ -1,9 +1,9 @@
 var mongoose = require("mongoose");
 
 var courseSchema = new mongoose.Schema({
-    name: String,
-    color: String,
-    percentage: Number,
+    name: {type: String, required: true},
+    color: {type: String, required: true},
+    percentage: {type: Number, required: true},
     categories: [{ //list of categories that this Course contains
         type: mongoose.Schema.Types.ObjectId,
         ref: "Category"

@@ -2,6 +2,7 @@ require("dotenv").config(); //gives us access to our .env file
 
 var localStrategy = require("passport-local"), //Imports the pasports and express packages.
     middlware = require("../middleware"), //We should require middleware/index.js but since the file is called index, this line will automaticly look for an index to require
+    functions = require("../functions"),
     passport = require("passport"), //Passport allows us to use user authentication.
     express = require("express"),
     router = express.Router()
@@ -31,30 +32,30 @@ router.get("/user/login", (req, res) => res.render("./user/registerLogin"));
 router.post("/user/register", (req, res) => {
     //Makes sure the username is valid
     if (req.body.firstName.trim().length < 1)
-        return showErrorAndRefresh(req, res, "Your first name must be at least 1 character")
+        return functions.showErrorAndRefresh(req, res, "Your first name must be at least 1 character")
 
     //Makes sure the username is valid
     var newUsername = req.body.username.toLowerCase().trim();
     if (newUsername.length < 5)
-        return showErrorAndRefresh(req, res, "Your username must be atleast 6 characters")
+        return functions.showErrorAndRefresh(req, res, "Your username must be atleast 6 characters")
 
     //Makes sure the password is secure
     if (req.body.password.trim().length < 7)
-        return showErrorAndRefresh(req, res, "Your password must be atleast 8 characters")
+        return functions.showErrorAndRefresh(req, res, "Your password must be atleast 8 characters")
 
     if (req.body.password.search(/[a-z]/) < 0)
-        return showErrorAndRefresh(req, res, "Your password must contain at least one lowercase letter")
+        return functions.showErrorAndRefresh(req, res, "Your password must contain at least one lowercase letter")
 
     if (req.body.password.search(/[A-Z]/) < 0)
-        return showErrorAndRefresh(req, res, "Your password must contain at least one uppercase letter")
+        return functions.showErrorAndRefresh(req, res, "Your password must contain at least one uppercase letter")
 
     if (req.body.password.search(/[0-9]/) < 0)
-        return showErrorAndRefresh(req, res, "Your password must contain at least one number")
+        return functions.showErrorAndRefresh(req, res, "Your password must contain at least one number")
 
     //ensures that the email is unique
     User.find({ email: req.body.email }, (err, foundUsers) => {
         if (foundUsers.length != 0) {
-            return showErrorAndRefresh(req, res, "That email is already taken")
+            return functions.showErrorAndRefresh(req, res, "That email is already taken")
         }
         else {
             //Creates a new user and gives it the data
@@ -104,38 +105,38 @@ router.get("/user/edit", middlware.isLoggedIn, (req, res) => res.render("user/ed
 router.put("/user/:id/edit", middlware.isLoggedIn, (req, res) => {
     //Makes sure the username is valid
     if (req.body.user.firstName.trim().length < 1)
-        return showErrorAndRefresh(req, res, "Your first name must be at least 1 character")
+        return functions.showErrorAndRefresh(req, res, "Your first name must be at least 1 character")
 
     //Makes sure the username is valid
     var newUsername = req.body.user.username.toLowerCase().trim();
     if (newUsername.length < 5)
-        return showErrorAndRefresh(req, res, "Your username must be atleast 6 characters")
+        return functions.showErrorAndRefresh(req, res, "Your username must be atleast 6 characters")
 
     User.find({ email: req.body.user.email }, (err, foundUsers) => {
         if (foundUsers.length == 1) {
             if (foundUsers[0].email == req.user.email) {
                 User.findByIdAndUpdate(req.params.id, req.body.user, (errorUpdatingUser, updatedUser) => {
                     if (errorUpdatingUser) {
-                        showErrorAndRefresh(req, res, errorUpdatingUser.message)
+                        functions.showErrorAndRefresh(req, res, errorUpdatingUser.message)
                         console.log("There has been an error updating the user... " + errorUpdatingUser.message)
                     }
                     req.flash("success", "Updated your account! Sign in again")
                     res.redirect("/user/login") 
                 })
             } else {
-                return showErrorAndRefresh(req, res, "That email is already taken")
+                return functions.showErrorAndRefresh(req, res, "That email is already taken")
             }
         } else if (foundUsers.length == 0) {
             User.findByIdAndUpdate(req.params.id, req.body.user, (errorUpdatingUser, updatedUser) => {
                 if (errorUpdatingUser) {
-                    showErrorAndRefresh(req, res, errorUpdatingUser.message)
+                    functions.showErrorAndRefresh(req, res, errorUpdatingUser.message)
                     console.log("There has been an error updating the user... " + errorUpdatingUser.message)
                 }
                 req.flash("success", "Updated your account! Sign in again")
                 res.redirect("/user/login")                 
             })
         } else {
-            return showErrorAndRefresh(req, res, "That email is already taken")
+            return functions.showErrorAndRefresh(req, res, "That email is already taken")
         }
     })
 })
@@ -171,9 +172,7 @@ router.post("/user/forgot", (req, res) => {
             })
         },
         function (token, foundUser, done) {
-
-
-            const mailData = {
+            var mailData = {
                 to: foundUser.email,
                 from: 'whatsmygradeapp@gmail.com',
                 subject: 'Password Reset',
@@ -189,26 +188,6 @@ router.post("/user/forgot", (req, res) => {
             } catch (sendingEmailError) {
                 console.log(sendingEmailError)
             }
-
-            // var mailData = {
-            //     from: "What's My Grade <whatsmygradeapp@gmail.com>",
-            //     to: foundUser.email,
-            //     subject: 'Password Reset',
-            //     text: "Hi There,\nYou're getting this email because you have requested to change your password on What's My Grade.\nClick the following link (or copy and paste it into your browser) to finish resetting your password." + 
-            //     "\n\nhttp://192.168.1.156:8080/user/reset/" + token + "\n\n" +
-            //     "This link will only work for the next hour. You can reply to this email with any questions or concerns you may have." + 
-            //     "\n\nBest,\nWhat's My Grade"
-            //   };
-
-            //   mailgun.messages().send(mailData, function (error, body) {
-            //     if(error){
-            //         console.log(error);
-            //         return;
-            //     }
-            //   console.log(body);
-            //   req.flash("success", "A password recovery email has been sent to " + foundUser.email)
-            //   res.redirect("/user/forgot")
-            // });
         }
     ],
         function (err) {
@@ -245,16 +224,16 @@ router.post("/reset/:token", (req, res) => {
         if (req.body.password === req.body.confirm) {
             //Makes sure the password is secure
             if (req.body.password.trim().length < 7)
-                return showErrorAndRefresh(req, res, "Your password must be atleast 8 characters")
+                return functions.showErrorAndRefresh(req, res, "Your password must be atleast 8 characters")
 
             if (req.body.password.search(/[a-z]/) < 0)
-                return showErrorAndRefresh(req, res, "Your password must contain at least one lowercase letter")
+                return functions.showErrorAndRefresh(req, res, "Your password must contain at least one lowercase letter")
 
             if (req.body.password.search(/[A-Z]/) < 0)
-                return showErrorAndRefresh(req, res, "Your password must contain at least one uppercase letter")
+                return functions.showErrorAndRefresh(req, res, "Your password must contain at least one uppercase letter")
 
             if (req.body.password.search(/[0-9]/) < 0)
-                return showErrorAndRefresh(req, res, "Your password must contain at least one number")
+                return functions.showErrorAndRefresh(req, res, "Your password must contain at least one number")
 
 
             foundUser.setPassword(req.body.password, (err) => {
@@ -296,8 +275,3 @@ router.delete("/user/:id/delete", middlware.isLoggedIn, (req, res) => {
 })
 
 module.exports = router; //Gives other files access to these routes 
-
-function showErrorAndRefresh(req, res, errorMessage) {
-    req.flash("error", errorMessage);
-    res.redirect("back")
-}

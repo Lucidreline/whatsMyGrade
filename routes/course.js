@@ -5,7 +5,8 @@ var express = require("express"), //Brings in the express package
 var Category = require("../models/category"),
     Course = require("../models/course"),
     Grade = require("../models/grade"),
-    middlware = require("../middleware") //We should require middleware/index.js but since the file is called index, this line will automaticly look for an index to require
+    middlware = require("../middleware"), //We should require middleware/index.js but since the file is called index, this line will automaticly look for an index to require
+    functions = require("../functions")
 
 //Index page, lists all the courses created by the logged in user
 router.get("/courses", middlware.isLoggedIn, async (req, res)=>{
@@ -25,6 +26,13 @@ router.get("/courses/new", middlware.isLoggedIn, (req, res)=> res.render("course
 
 //Recieves the data that was entered in the 'New Course' form
 router.post("/courses/new", middlware.isLoggedIn, (req, res)=>{
+
+    if(req.body.course.name.trim().length < 1)
+        return functions.showErrorAndRefresh(req, res, "Oops, name must be at least one character")
+
+    if(req.body.course.color.trim() == "")
+        return functions.showErrorAndRefresh(req, res, "Oops, Click a color before moving on")
+
     //creates the course using the forms data
     Course.create(req.body.course, (err, createdCourse)=>{
         if(err){
@@ -92,6 +100,12 @@ router.get("/courses/:id/edit", middlware.isLoggedIn, (req, res)=>{
 
 //Edits the course
 router.put("/courses/:id/edit", middlware.isLoggedIn, (req,res)=>{
+    if(req.body.course.name.trim().length < 1)
+        return functions.showErrorAndRefresh(req, res, "Oops, name must be at least one character")
+
+    if(req.body.course.color.trim() == "")
+        return functions.showErrorAndRefresh(req, res, "Oops, Click a color before moving on")
+
     Course.findByIdAndUpdate(req.params.id, req.body.course, (errorUpdatingCourse, updatedCourse)=>{ //Finds the course by its ID
         if(errorUpdatingCourse || !updatedCourse){ //if there is an error finding the course or if it can not be
             console.log("Can not update course");
@@ -156,3 +170,4 @@ router.delete("/courses/:id/delete", middlware.isLoggedIn, (req, res)=>{
 })
 
 module.exports = router; //Allows other files to use the routes in this file
+
