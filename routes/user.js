@@ -177,7 +177,7 @@ router.post("/user/forgot", (req, res) => {
                 from: 'whatsmygradeapp@gmail.com',
                 subject: 'Password Reset',
                 text: "Hi There,\nYou're getting this email because you have requested to change your password on What's My Grade.\nClick the following link (or copy and paste it into your browser) to finish resetting your password." +
-                    "\n\nhttp://192.168.1.156:8080/user/reset/" + token + "\n\n" +
+                    "\n\nhttp://whatsmygrade.org/user/reset/" + token + "\n\n" +
                     "This link will only work for the next hour. You can reply to this email with any questions or concerns you may have." +
                     "\n\nBest,\nWhat's My Grade",
             };
