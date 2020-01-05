@@ -142,9 +142,15 @@ nav ul{
     flex-wrap: wrap;
 }
 
+#inputHelp{
+    color: #e77f67;
+    font-size: 1.4rem;
+    display: none;
+}
+
 .form-head{
     text-align: center;
-    padding: 4rem;
+    padding: 3rem 0 2rem 0;
 }
 
 .under-line-input{
@@ -252,7 +258,7 @@ nav ul{
     border: #131c27 solid 3px;
     border-radius: 10px;
     flex: 1 1 25rem;
-    min-height: 11vh;
+    min-height: 9vh;
     margin: 2rem 4rem;
     box-shadow: -1.5px 10px 10px rgba(0, 0, 0, 0.198), -3px 20px 20px rgba(0, 0, 0, 0.349);
     text-align: center;
@@ -476,6 +482,8 @@ select {
 /* Footer */
 footer{
     background-color: #131c27;
+    box-shadow: 0 50vh 0 50vh #131c27; /*Gives the effect that the footer goes down to the end of the page */
+    
 }
 
 

@@ -33,12 +33,16 @@
             <h2>Sign Up</h2>
         </header>
         <form action="/user/register" method="POST">
+            <div style="text-align: center;" class="">
+                <p id="inputHelp"></p>
+            </div>
+            
             <div class="form-row">
                 <div class="left-form-box">
                     <label for="name">First Name:</label>
                 </div>
                 <div class="right-form-box">
-                    <input class="under-line-input" required type="text" name="firstName" placeholder="First Name" required>
+                    <input onfocus="showNameHint(this)" id="nameInput" class="under-line-input" required type="text" name="firstName" placeholder="First Name" required>
                 </div>
             </div>
             <div class="form-row">
@@ -46,7 +50,7 @@
                     <label for="email" >Email: </label>
                 </div>
                 <div class="right-form-box">
-                    <input class="under-line-input" required type="email" name="email" placeholder="Email" required>
+                    <input onfocus="showEmailHint(this)" id="emailInput" class="under-line-input" required type="email" name="email" placeholder="Email" required>
                 </div>
             </div>
             <div class="form-row">
@@ -54,7 +58,7 @@
                     <label for="username">Username:</label>
                 </div>
                 <div class="right-form-box">
-                    <input class="under-line-input" required type="text" name="username" placeholder="Username" required>
+                    <input onfocus="showUsernameHint(this)" id="usernameInput" class="under-line-input" required type="text" name="username" placeholder="Username" required>
                 </div>
             </div>
             <div class="form-row">
@@ -62,12 +66,35 @@
                     <label for="password">Password:</label>
                 </div>
                 <div class="right-form-box">
-                    <input class="under-line-input" required type="Password" name="password" placeholder="Password" required>
+                    <input onfocus="showPasswordHint(this)" id="passwordInput" class="under-line-input" required type="Password" name="password" placeholder="Password" required>
                 </div>
             </div>
             <button class="submit-btn" type="submit">Create Account</button>
         </form>
     </div>
 </section>
+
+<!-- Input hints so that the user knows the input requirements -->
+<script>
+//hints
+let inputHelp = document.getElementById("inputHelp");
+
+function showNameHint(x){
+    inputHelp.style.display = "block"
+    inputHelp.innerText = "Name must contain at least 1 character"
+}
+function showEmailHint(x){
+    inputHelp.style.display = "block"
+    inputHelp.innerText = "Email must be valid"
+}
+function showUsernameHint(x){
+    inputHelp.style.display = "block"
+    inputHelp.innerText = "Username must contain at least 6 characters"
+}
+function showPasswordHint(x){
+    inputHelp.style.display = "block"
+    inputHelp.innerText = "Must contain at least:\n 8 characters\n1 number\n1 uppercase letter\nand one lowercase letter."
+}
+</script>
 
 <% include ../partials/footer %>
