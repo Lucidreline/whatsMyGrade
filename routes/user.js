@@ -82,6 +82,7 @@ router.post("/user/register", (req, res) => {
 //Login ====================================
 //Takes in the data from the login form
 router.post("/user/login", function (req, res, next) {
+    req.body.username = req.body.username.toLowerCase()
     passport.authenticate("local",
         {
             successRedirect: "/courses", //If the password matches, the user is redirected to home
@@ -157,6 +158,7 @@ router.post("/user/forgot", (req, res) => {
             User.findOne({ email: req.body.email }, (errorFindingUser, foundUser) => {
                 //If we were not able to find a user with the given email
                 if (!foundUser) {
+
                     console.log("NO Accounts with that email: " + req.body.email);
                     req.flash("error", "We don't have an account with that email.")
                     return res.redirect('/user/forgot');

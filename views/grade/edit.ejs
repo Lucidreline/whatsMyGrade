@@ -18,13 +18,16 @@
             <header style="padding-top: 0;" class='form-head'>
                 <h2 >Edit <%= grade.name %>!</h2>
             </header>
+            <div style="text-align: center;" class="">
+                <p id="gradeInputHelp"></p>
+            </div>
             <form action="/courses/<%= course._id %>/grade/<%= grade._id %>/edit?_method=PUT" method="POST">
                 <div class="form-row">
                     <div class="left-form-box">
                         <label for="name">Grade Name: </label>
                     </div>
                     <div class="right-form-box">
-                        <input class="under-line-input" required type="text" name="grade[name]" placeholder="name"
+                        <input onfocus="showGradeNameHint(this)" class="under-line-input" required type="text" name="grade[name]" placeholder="name"
                             value="<%= grade.name %>">
                     </div>
                 </div>
@@ -33,7 +36,7 @@
                         <label>Points Recieved: </label>
                     </div>
                     <div class="right-form-box">
-                        <input required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved"
+                        <input onfocus="showPointsRecievedHint(this)" required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved"
                             class="under-line-input" value="<%= grade.pointsRecieved %>">
                     </div>
                 </div>
@@ -42,7 +45,7 @@
                         <label>Total Possible Points: </label>
                     </div>
                     <div class="right-form-box">
-                        <input required type="number" name="grade[possiblePoints]" placeholder="Total Possible Points"
+                        <input onfocus="showPossiblePointsHint(this)" required type="number" name="grade[possiblePoints]" placeholder="Total Possible Points"
                             class="under-line-input" value="<%= grade.possiblePoints %>">
                     </div>
                 </div>
@@ -51,7 +54,7 @@
                         <label>Grade Category: </label>
                     </div>
                     <div class="right-form-box">
-                        <select name="exsistingCategory[name]" id="category-selector">
+                        <select onfocus="showCategoryHint(this)" name="exsistingCategory[name]" id="category-selector">
                             <% categories.forEach((category)=>{ %>
                             <% if(grade.category.toString() == category._id.toString()){ %>
                             <option selected value="<%= category.name %>"><%= category.name %></option>
@@ -67,13 +70,15 @@
                     <h5 class="newGrade-subtitle">
                         Create a category for this grade
                     </h5>
-
+                    <div style="text-align: center;" class="">
+                        <p id="categoryInputHelp"></p>
+                    </div>
                     <div class="form-row">
                         <div class="left-form-box">
                             <label>Category Name: </label>
                         </div>
                         <div class="right-form-box">
-                            <input class="under-line-input" type="text" name="newCategory[name]"
+                            <input onfocus="showCategoryNameHint(this)" class="under-line-input" type="text" name="newCategory[name]"
                                 placeholder="New Category name">
                         </div>
                     </div>
@@ -82,7 +87,7 @@
                             <label>Category Percent Worth: </label>
                         </div>
                         <div class="right-form-box">
-                            <input class="under-line-input" type="number" name="newCategory[percentWorth]"
+                            <input onfocus="showPercentWorthHint(this)" class="under-line-input" type="number" name="newCategory[percentWorth]"
                                 placeholder="Percent Worth">
                         </div>
                     </div>
@@ -108,15 +113,49 @@
                 </div>
                 <button class="new-grade-submit submit-btn" type="submit">Update!</button>
             </form>
-    
     </div>
 </section>
 
+<!-- Script to show the hint messages for the inputs -->
+<script>
 
+    //grade hints 
+    let gradeInputHelp = document.getElementById("gradeInputHelp");
+    console.log(gradeInputHelp)
 
+    function showGradeNameHint(x) {
+        gradeInputHelp.style.display = "block"
+        gradeInputHelp.innerText = "The grade's name must be at least one character."
+    }
 
+    function showPointsRecievedHint(x) {
+        gradeInputHelp.style.display = "block"
+        gradeInputHelp.innerText = "The amount of points you recieved on the assignment."
+    }
 
+    function showPossiblePointsHint(x) {
+        gradeInputHelp.style.display = "block"
+        gradeInputHelp.innerText = "The maximum amount of points you could have recieved."
+    }
 
+    function showCategoryHint(x) {
+        gradeInputHelp.style.display = "block"
+        gradeInputHelp.innerText = "Type of assignments (homework, quizes, etc).\nSelect 'new' to add a new category."
+    }
+
+    //category hints
+    let categoryInputHelp = document.getElementById("categoryInputHelp");
+
+    function showCategoryNameHint(x) {
+        categoryInputHelp.style.display = "block"
+        categoryInputHelp.innerText = "Type of assignments (homework, quizes, etc)."
+    }
+
+    function showPercentWorthHint(x) {
+        categoryInputHelp.style.display = "block"
+        categoryInputHelp.innerText = "How much these types of assignments are worth.\nFor example, if this category is worth 15%\nof your grade, put 15."
+    }
+</script>
 
 <script>
     var courseColorHexCode = document.getElementById("bodyColorHolder").textContent.trim(),

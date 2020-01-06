@@ -37,7 +37,7 @@ router.post("/courses/:id/grade/new", middlware.isLoggedIn, (req, res) => {
             //After the course is found, the grade is created using the data from the form
             Grade.create(req.body.grade, async (createdGradeError, createdGrade) => {
                 if (createdGradeError) {
-                    console.log('Was not able to create the grade');
+                    console.log(createdGradeError.message);
                     req.flash("error", "Oops, Your grade was not successfuly added")
                     return res.redirect("/courses");
                 }

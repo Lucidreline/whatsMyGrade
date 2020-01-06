@@ -6,12 +6,15 @@
             <h2>Reset Password</h2>
         </header>
         <form action="/reset/<%= token %>" method="POST">
+            <div style="text-align: center;" class="">
+                <p id="inputHelp"></p>
+            </div>
             <div class="form-row">
                 <div class="left-form-box">
                     <label for="username">New Password:</label>
                 </div>
                 <div class="right-form-box">
-                    <input class="under-line-input" type="password" name="password" placeholder="New Password" required>
+                    <input onfocus="showPasswordHint(this)" class="under-line-input" type="password" name="password" placeholder="New Password" required>
                 </div>
             </div>
             <div class="form-row">
@@ -19,12 +22,29 @@
                     <label for="username">Confirm Password:</label>
                 </div>
                 <div class="right-form-box">
-                    <input class="under-line-input" type="password" name="confirm" placeholder="Confirm Password" required>
+                    <input onfocus="showConfirmHint(this)" class="under-line-input" type="password" name="confirm" placeholder="Confirm Password"
+                        required>
                 </div>
             </div>
             <button class="submit-btn" type="submit">Update Password</button>
         </form>
     </div>
 </section>
+
+<!-- Input hints so that the user knows the input requirements -->
+<script>
+    //hints
+    let inputHelp = document.getElementById("inputHelp");
+
+    function showPasswordHint(x) {
+        inputHelp.style.display = "block"
+        inputHelp.innerText = "Must contain at least:\n 8 characters\n1 number\n1 uppercase letter\nand 1 lowercase letter."
+    }
+
+    function showConfirmHint(x) {
+        inputHelp.style.display = "block"
+        inputHelp.innerText = "Passwords must match."
+    }
+</script>
 
 <% include ../partials/footer %>

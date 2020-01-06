@@ -4,7 +4,7 @@ var categorySchema = new mongoose.Schema({ //Structures the data that categories
     name: {type: String, required: true},
     color: {type: String, required: true},
     percentWorth: {type: Number, required: true}, //This category is X% of your total grade
-    course: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    course: { type: mongoose.Schema.Types.ObjectId, ref: "User"},
     gradesAssociatedWith:[
         {
             type: mongoose.Schema.Types.ObjectId,

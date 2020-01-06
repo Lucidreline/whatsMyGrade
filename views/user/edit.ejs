@@ -11,12 +11,15 @@
             <h2>Edit Account</h2>
         </header>
         <form action="/user/<%= loggedInUser._id %>/edit?_method=PUT" method="POST">
+            <div style="text-align: center;" class="">
+                <p id="inputHelp"></p>
+            </div>
             <div class="form-row">
                 <div class="left-form-box">
                     <label for="name">First Name:</label>
                 </div>
                 <div class="right-form-box">
-                    <input class="under-line-input" required type="text" name="user[firstName]" placeholder="First Name" value="<%= loggedInUser.firstName %>"required>
+                    <input onfocus="showNameHint(this)" class="under-line-input" required type="text" name="user[firstName]" placeholder="First Name" value="<%= loggedInUser.firstName %>"required>
                 </div>
             </div>
             <div class="form-row">
@@ -24,7 +27,7 @@
                     <label for="email" >Email: </label>
                 </div>
                 <div class="right-form-box">
-                    <input class="under-line-input" required type="email" name="user[email]" placeholder="Email" value="<%= loggedInUser.email %>" required>
+                    <input onfocus="showEmailHint(this)" class="under-line-input" required type="email" name="user[email]" placeholder="Email" value="<%= loggedInUser.email %>" required>
                 </div>
             </div>
             <div class="form-row">
@@ -32,12 +35,30 @@
                     <label for="username">Username:</label>
                 </div>
                 <div class="right-form-box">
-                    <input class="under-line-input" required type="text" name="user[username]" placeholder="Username" value="<%= loggedInUser.username %>" required>
+                    <input onfocus="showUsernameHint(this)" class="under-line-input" required type="text" name="user[username]" placeholder="Username" value="<%= loggedInUser.username %>" required>
                 </div>
             </div>
             <button class="submit-btn" type="submit">Update</button>
         </form>
     </div>
 </section>
+
+<script>
+    //hints
+    let inputHelp = document.getElementById("inputHelp");
+    
+    function showNameHint(x){
+        inputHelp.style.display = "block"
+        inputHelp.innerText = "Name must contain at least 1 character"
+    }
+    function showEmailHint(x){
+        inputHelp.style.display = "block"
+        inputHelp.innerText = "Email must be valid"
+    }
+    function showUsernameHint(x){
+        inputHelp.style.display = "block"
+        inputHelp.innerText = "Username must contain at least 6 characters"
+    }
+    </script>
 
 <% include ../partials/footer %>

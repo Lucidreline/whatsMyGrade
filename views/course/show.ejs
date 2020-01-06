@@ -19,13 +19,16 @@
         <div class="add-grade">
             <h4 style="cursor: pointer;" id="add-grade-btn" class="newGrade-title">Add Grade</h4>
             <form action="/courses/<%= course._id %>/grade/new" method="POST">
+                <div style="text-align: center;" class="">
+                    <p id="gradeInputHelp"></p>
+                </div>
                 <div id="add-grade-accordian">
                     <div class="form-row">
                         <div class="left-form-box">
                             <label for="name">Grade Name: </label>
                         </div>
                         <div class="right-form-box">
-                            <input class="under-line-input" required type="text" name="grade[name]" placeholder="name">
+                            <input onfocus="showGradeNameHint(this)" class="under-line-input" required type="text" name="grade[name]" placeholder="Name">
                         </div>
                     </div>
                     <div class="form-row">
@@ -33,7 +36,8 @@
                             <label>Points Recieved: </label>
                         </div>
                         <div class="right-form-box">
-                            <input class="under-line-input" required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved">
+                            <input onfocus="showPointsRecievedHint(this)" class="under-line-input" required type="number" name="grade[pointsRecieved]"
+                                placeholder="Points Recieved">
                         </div>
                     </div>
                     <div class="form-row">
@@ -41,7 +45,8 @@
                             <label>Total Possible Points: </label>
                         </div>
                         <div class="right-form-box">
-                            <input class="under-line-input" required type="number" name="grade[possiblePoints]" placeholder="Total Possible Points">
+                            <input onfocus="showPossiblePointsHint(this)" class="under-line-input" required type="number" name="grade[possiblePoints]"
+                                placeholder="Total Possible Points">
                         </div>
                     </div>
                     <div class="form-row">
@@ -49,9 +54,9 @@
                             <label>Grade Category: </label>
                         </div>
                         <div class="right-form-box">
-                            <select id="category-selector" name="exsistingCategory[name]">
+                            <select onfocus="showCategoryHint(this)" id="category-selector" name="exsistingCategory[name]">
                                 <% categories.forEach((category)=>{ %>
-                                    <option value="<%= category.name %>"><%= category.name %></option>
+                                <option value="<%= category.name %>"><%= category.name %></option>
                                 <% }) %>
                                 <option value="New">New</option>
                             </select>
@@ -61,13 +66,16 @@
                         <h5 class="newGrade-subtitle">
                             Create a category for this grade
                         </h5>
-        
+                        <div style="text-align: center;" class="">
+                            <p id="categoryInputHelp"></p>
+                        </div>
                         <div class="form-row">
                             <div class="left-form-box">
                                 <label>Category Name: </label>
                             </div>
                             <div class="right-form-box">
-                                <input class="under-line-input" type="text" name="newCategory[name]" placeholder="New Category name">
+                                <input onfocus="showCategoryNameHint(this)" class="under-line-input" type="text" name="newCategory[name]"
+                                    placeholder="New Category name">
                             </div>
                         </div>
                         <div class="form-row">
@@ -75,7 +83,8 @@
                                 <label>Category Percent Worth: </label>
                             </div>
                             <div class="right-form-box">
-                                <input class="under-line-input" type="number" name="newCategory[percentWorth]" placeholder="Percent Worth">
+                                <input onfocus="showPercentWorthHint(this)" class="under-line-input" type="number" name="newCategory[percentWorth]"
+                                    placeholder="Percent Worth">
                             </div>
                         </div>
                         <div class="form-row">
@@ -88,8 +97,9 @@
                         </div>
                         <div class="form-row">
                             <div class="one-col-center">
-                                <input  id="courseColorInput" type="text" name="newCategory[color]" placeholder="Course color" style="display: none;">
-                            <canvas id="colorPickerCanvas" width="375" height="60"></canvas>
+                                <input id="courseColorInput" type="text" name="newCategory[color]"
+                                    placeholder="Course color" style="display: none;">
+                                <canvas id="colorPickerCanvas" width="375" height="60"></canvas>
                             </div>
                         </div>
 
@@ -99,52 +109,96 @@
                     </div>
                     <button class="new-grade-submit submit-btn" type="submit">Create!</button>
                 </div>
-                
-            </form>           
+
+            </form>
         </div>
         <% for(var i = grades.length - 1; i > -1; i--){ %>
-            <div class="grade">
-                <div class="grade-title">
-                    <h4><%= grades[i].name %></h4>
-                </div>
-                <div class="grade-category">
-                    <p><%= grades[i].categoryName %></p>
-                </div>
-                <div class="grade-score">
-                    <p><%= grades[i].pointsRecieved %>/<%= grades[i].possiblePoints %></p>
-                </div>
-                <div class="grade-percentage">
-                    <p><%= grades[i].percentage.toFixed(2) %>%</p>
-                </div>
-                <div class="grade-edit">
-                    <a href="/courses/<%= course._id %>/grade/<%= grades[i]._id %>/edit">
-                        Edit
-                    </a>
-                </div>
+        <div class="grade">
+            <div class="grade-title">
+                <h4><%= grades[i].name %></h4>
             </div>
-            <% } %>
+            <div class="grade-category">
+                <p><%= grades[i].categoryName %></p>
+            </div>
+            <div class="grade-score">
+                <p><%= grades[i].pointsRecieved %>/<%= grades[i].possiblePoints %></p>
+            </div>
+            <div class="grade-percentage">
+                <p><%= grades[i].percentage.toFixed(2) %>%</p>
+            </div>
+            <div class="grade-edit">
+                <a href="/courses/<%= course._id %>/grade/<%= grades[i]._id %>/edit">
+                    Edit
+                </a>
+            </div>
+        </div>
+        <% } %>
 
     </section>
 
 </div>
 
+<!-- Script to show the hint messages for the inputs -->
 <script>
 
+    //grade hints 
+    let gradeInputHelp = document.getElementById("gradeInputHelp");
+    console.log(gradeInputHelp)
+
+    function showGradeNameHint(x) {
+        gradeInputHelp.style.display = "block"
+        gradeInputHelp.innerText = "The grade's name must be at least one character."
+    }
+
+    function showPointsRecievedHint(x) {
+        gradeInputHelp.style.display = "block"
+        gradeInputHelp.innerText = "The amount of points you recieved on the assignment."
+    }
+
+    function showPossiblePointsHint(x) {
+        gradeInputHelp.style.display = "block"
+        gradeInputHelp.innerText = "The maximum amount of points you could have recieved."
+    }
+
+    function showCategoryHint(x) {
+        gradeInputHelp.style.display = "block"
+        gradeInputHelp.innerText = "Type of assignments (homework, quizes, etc).\nSelect 'new' to add a new category."
+    }
+
+    //category hints
+    let categoryInputHelp = document.getElementById("categoryInputHelp");
+
+    function showCategoryNameHint(x) {
+        categoryInputHelp.style.display = "block"
+        categoryInputHelp.innerText = "Type of assignments (homework, quizes, etc)."
+    }
+
+    function showPercentWorthHint(x) {
+        categoryInputHelp.style.display = "block"
+        categoryInputHelp.innerText = "How much these types of assignments are worth.\nFor example, if this category is worth 15%\nof your grade, put 15."
+    }
+</script>
+
+<!-- Script to change colors of the page -->
+<script>
     //set background color
     var courseColorHexCode = document.getElementById("bodyColorHolder").textContent.trim();
-    document.body.style.background = "linear-gradient(to right," + courseColorHexCode + "3d, "  + courseColorHexCode + "67, " + courseColorHexCode + "3d)";
+    document.body.style.background = "linear-gradient(to right," + courseColorHexCode + "3d, " + courseColorHexCode + "67, " + courseColorHexCode + "3d)";
 
     let navText = document.getElementsByClassName("nav-text");
-    for(var i = 0; i < navText.length; i++){
+    for (var i = 0; i < navText.length; i++) {
         navText[i].style.color = courseColorHexCode;
     }
-    
+</script>
+
+<!-- Script to make the grade/category form visable or not -->
+<script>
     //Pulls out the 'new grade menu' when the 'add grade' button is clicked
-    var addGradeBtn = document.getElementById("add-grade-btn").addEventListener("click", function(){
+    var addGradeBtn = document.getElementById("add-grade-btn").addEventListener("click", function () {
         var addGradeAccordian = document.getElementById("add-grade-accordian");
-        if(addGradeAccordian.style.display === "block"){
+        if (addGradeAccordian.style.display === "block") {
             addGradeAccordian.style.display = "none";
-        }else{
+        } else {
             addGradeAccordian.style.display = "block"
             var categorySelector = document.getElementById("category-selector")
             document.getElementById("add-category-accordian").style.display = (categorySelector.value == "New") ? "block" : "none";
@@ -153,17 +207,19 @@
 
     //Pulls out the new category menu if the new option is selected
     var categorySelector = document.getElementById("category-selector")
-    categorySelector.addEventListener("change", ()=>{
-        var options = categorySelector.querySelectorAll("option"), 
+    categorySelector.addEventListener("change", () => {
+        var options = categorySelector.querySelectorAll("option"),
             selectedValue;
 
-        options.forEach(option =>{ 
-            if(option.selected) selectedValue = option.value;
+        options.forEach(option => {
+            if (option.selected) selectedValue = option.value;
         })
         document.getElementById("add-category-accordian").style.display = (selectedValue == "New") ? "block" : "none"
     }) 
+</script>
 
-    //put the grades in the graph
+<!-- Puts the grades in the graph -->
+<script>
     var gradesList = JSON.parse(document.getElementById("gradesObj").innerText);
 
     function getField(input, field) {
@@ -171,7 +227,7 @@
         input.forEach((inp) => output.push(inp[field]))
         return output
     }
-    
+
     let graph = document.getElementById("gradeGraph").getContext("2d");
     Chart.defaults.global.defaultFontColor = 'black';
     let GradeGraph = new Chart(graph, {
@@ -204,16 +260,16 @@
             ]
         },
         options: {
-            legend:{
-                labels:{
+            legend: {
+                labels: {
                     fontColor: 'black'
                 }
             }
         }
     })
-</script> 
+</script>
 
-
+<!-- Script to pick a color from the pallet -->
 <script>
     //Script for picking a color
     var canvas = document.getElementById("colorPickerCanvas");

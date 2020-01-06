@@ -7,13 +7,15 @@
             <h2>Add A Course!</h2>
         </header>
         <form action="/courses/new" method="POST">
-
+            <div style="text-align: center;" class="">
+                <p id="inputHelp"></p>
+            </div>
             <div class="form-row">
                 <div class="left-form-box">
                     <label for="name">Course Name: </label>
                 </div>
                 <div class="right-form-box">
-                    <input class="under-line-input" required type="text" name="course[name]" placeholder="Course name" required>
+                    <input onfocus="showNameHint(this)" class="under-line-input" type="text" name="course[name]" placeholder="Course name" required>
                 </div>
             </div>
 
@@ -28,7 +30,7 @@
             </div>
             <div class="row">
                 <div class="">
-                    <input required id="courseColorInput" type="text" name="course[color]" placeholder="Course color" style="display: none;">
+                    <input id="courseColorInput" type="text" name="course[color]" placeholder="Course color" style="display: none;">
                     <canvas id="colorPickerCanvas"></canvas>
                 </div>
             </div>
@@ -41,7 +43,7 @@
     </div>
 </section>
 
-
+<!-- Script for choosing a color from the pallet -->
 <script>
     var canvas = document.getElementById("colorPickerCanvas");
     
@@ -109,6 +111,18 @@
         document.getElementById("courseColorInput").value = hex;
 
     }, false);
+</script>
+
+<!-- Script for adding the help messages on inputs -->
+<script>
+    //hints
+    let inputHelp = document.getElementById("inputHelp");
+
+    function showNameHint(x) {
+        inputHelp.style.display = "block"
+        inputHelp.innerText = "Must be at least 1 character."
+    }
+
 </script>
 
 <% include ../partials/footer %>

@@ -142,8 +142,8 @@ nav ul{
     flex-wrap: wrap;
 }
 
-#inputHelp{
-    color: #e77f67;
+#inputHelp, #gradeInputHelp, #categoryInputHelp{
+    color: #f39c12;
     font-size: 1.4rem;
     display: none;
 }
