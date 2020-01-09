@@ -57,14 +57,6 @@ app.use(function(req, res, next){ //A middleware. before any page is loaded, it 
     next(); //Starts the next middlewar in the route or if there isnt any more, it will call the call back function
 })
 
-app.get('*', function(req, res) {  
-    res.redirect('https://' + req.headers.host + req.url);
-    console.log("host: " + req.headers.host)
-    console.log("url: " + req.url)
-
-    // res.redirect('https://example.com' + req.url);
-})
-
 
 var allRoutes = ["index", "user", "course", "grade"];
 allRoutes.forEach(route => app.use(require("./routes/" + route))) //gets the route files that are refactored into different files
