@@ -28,6 +28,9 @@ passport.deserializeUser(User.deserializeUser());
 //Renders the login/register form
 router.get("/user/login", (req, res) => res.render("./user/registerLogin"));
 
+//Renders the login/register form
+router.get("/user/register", (req, res) => res.render("./user/registerLogin"));
+
 //Takes in the data from the register form
 router.post("/user/register", (req, res) => {
     //Makes sure the username is valid
