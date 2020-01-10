@@ -1,4 +1,16 @@
-//The app's dependencies... we are just requiring all of the dependancies
+let banner = "\n\n" +
+    " ██▓     █    ██  ▄████▄   ██▓▓█████▄  ██▀███  ▓█████  ██▓     ██▓ ███▄    █ ▓█████ \n" +
+    "▓██▒     ██  ▓██▒▒██▀ ▀█  ▓██▒▒██▀ ██▌▓██ ▒ ██▒▓█   ▀ ▓██▒    ▓██▒ ██ ▀█   █ ▓█   ▀ \n" +
+    "▒██░    ▓██  ▒██░▒▓█    ▄ ▒██▒░██   █▌▓██ ░▄█ ▒▒███   ▒██░    ▒██▒▓██  ▀█ ██▒▒███   \n" +
+    "▒██░    ▓▓█  ░██░▒▓▓▄ ▄██▒░██░░▓█▄   ▌▒██▀▀█▄  ▒▓█  ▄ ▒██░    ░██░▓██▒  ▐▌██▒▒▓█  ▄ \n" +
+    "░██████▒▒▒█████▓ ▒ ▓███▀ ░░██░░▒████▓ ░██▓ ▒██▒░▒████▒░██████▒░██░▒██░   ▓██░░▒████▒\n" +
+    "░ ▒░▓  ░░▒▓▒ ▒ ▒ ░ ░▒ ▒  ░░▓   ▒▒▓  ▒ ░ ▒▓ ░▒▓░░░ ▒░ ░░ ▒░▓  ░░▓  ░ ▒░   ▒ ▒ ░░ ▒░ ░\n" +
+    "░ ░ ▒  ░░░▒░ ░ ░   ░  ▒    ▒ ░ ░ ▒  ▒   ░▒ ░ ▒░ ░ ░  ░░ ░ ▒  ░ ▒ ░░ ░░   ░ ▒░ ░ ░  ░\n" +
+    "  ░ ░    ░░░ ░ ░ ░         ▒ ░ ░ ░  ░   ░░   ░    ░     ░ ░    ▒ ░   ░   ░ ░    ░   \n" +
+    "    ░  ░   ░     ░ ░       ░     ░       ░        ░  ░    ░  ░ ░           ░    ░  ░\n" +
+    "                 ░             ░                                                    \n\n";
+
+    //The app's dependencies... we are just requiring all of the dependancies
 var methodOverride = require("method-override"), //Allows us to send PUT and DELETE actions from our forms
     bodyParser = require("body-parser"), //allows us to get information from the user's form
     flash = require("connect-flash"), //Gives us access to success and error messages for the user
@@ -23,7 +35,7 @@ mongoose.connect(process.env.MONGOOSE_LINK, {
     useNewUrlParser: true,
     useUnifiedTopology: true 
 }).then(()=>{
-    console.log("Successfully connected to our DataBase Son!");
+    console.log("Successfully connected to our DataBase Son!" + banner);
 }).catch(err =>{
     console.log("Database Error: " + err.message);
 })
@@ -60,6 +72,5 @@ app.use(function(req, res, next){ //A middleware. before any page is loaded, it 
 
 var allRoutes = ["index", "user", "course", "grade"];
 allRoutes.forEach(route => app.use(require("./routes/" + route))) //gets the route files that are refactored into different files
-
-
-app.listen(process.env.PORT, process.env.IP , ()=> console.log("Server is ONLINE")); //Makes the server possible. Gives it a port and an IP adress if I give one.
+    
+app.listen(process.env.PORT, process.env.IP , ()=> console.log("SERVER: [ON] OFF")); //Makes the server possible. Gives it a port and an IP adress if I give one.
