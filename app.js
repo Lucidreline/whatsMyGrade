@@ -59,6 +59,12 @@ var User = require("./models/user"); //Gives this file access to the User model
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
+// catch 404 and forward to error handler
+// app.use(function(req, res, next) {
+//     var err = new Error('Unauth');
+//     err.status = 401;
+//     next(err);  
+// });
 
 app.use(function(req, res, next){ //A middleware. before any page is loaded, it runs this method
     //This lets us access the current user's information.

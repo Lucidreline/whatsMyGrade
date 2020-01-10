@@ -73,10 +73,16 @@ router.post("/user/register", (req, res) => {
                     console.log("Error registering a new User: " + err.message);
                     return res.redirect("/user/login");
                 }
-                passport.authenticate("local")(req, res, function () { //Logs in the new user
+
+                req.login(createdUser, err => {
+                    if(err){
+                        console.log("err")
+                        req.flash("error", err.message)
+                        return res.redirect("/user/login")
+                    }
                     req.flash("success", "Welcome to your new account " + req.body.firstName + "!!!")
                     res.redirect("/courses")
-                })
+                });
             })
         }
     })
@@ -125,7 +131,7 @@ router.put("/user/:id/edit", middlware.isLoggedIn, (req, res) => {
                         console.log("There has been an error updating the user... " + errorUpdatingUser.message)
                     }
                     req.flash("success", "Updated your account! Sign in again")
-                    res.redirect("/user/login") 
+                    res.redirect("/user/login")
                 })
             } else {
                 return functions.showErrorAndRefresh(req, res, "That email is already taken")
@@ -137,7 +143,7 @@ router.put("/user/:id/edit", middlware.isLoggedIn, (req, res) => {
                     console.log("There has been an error updating the user... " + errorUpdatingUser.message)
                 }
                 req.flash("success", "Updated your account! Sign in again")
-                res.redirect("/user/login")                 
+                res.redirect("/user/login")
             })
         } else {
             return functions.showErrorAndRefresh(req, res, "That email is already taken")
