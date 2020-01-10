@@ -56,12 +56,13 @@
                         <div class="right-form-box">
                             <select onfocus="showCategoryHint(this)" id="category-selector" name="exsistingCategory[name]">
                                 <% categories.forEach((category)=>{ %>
-                                <option value="<%= category.name %>"><%= category.name %></option>
+                                <option id="<%= category._id %>" value="<%= category.name %>"><%= category.name %></option>
                                 <% }) %>
                                 <option value="New">New</option>
                             </select>
                         </div>
                     </div>
+                    <button onclick="EditCategory(this)">Edit This Category</button>
                     <div id="add-category-accordian">
                         <h5 class="newGrade-subtitle">
                             Create a category for this grade
@@ -212,10 +213,19 @@
             selectedValue;
 
         options.forEach(option => {
-            if (option.selected) selectedValue = option.value;
+            if (option.selected){
+                selectedValue = option.value;
+                selectedcategoryId = option.id
+            } 
         })
+        console.log("op: " + selectedcategoryId)
         document.getElementById("add-category-accordian").style.display = (selectedValue == "New") ? "block" : "none"
     }) 
+
+    function EditCategory(x){
+        if(selectedcategoryId)
+            window.location.href = '/category/' + selectedcategoryId + "/edit";
+    }
 </script>
 
 <!-- Puts the grades in the graph -->

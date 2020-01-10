@@ -76,7 +76,7 @@ app.use(function(req, res, next){ //A middleware. before any page is loaded, it 
 })
 
 
-var allRoutes = ["index", "user", "course", "grade"];
+var allRoutes = ["index", "user", "course", "grade", "category"];
 allRoutes.forEach(route => app.use(require("./routes/" + route))) //gets the route files that are refactored into different files
     
 app.listen(process.env.PORT, ()=> console.log("SERVER: [ON] OFF")); //Makes the server possible. Gives it a port and an IP adress if I give one.
