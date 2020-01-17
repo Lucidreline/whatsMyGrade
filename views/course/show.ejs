@@ -209,8 +209,15 @@
     //Pulls out the new category menu if the new option is selected
     var categorySelector = document.getElementById("category-selector")
     categorySelector.addEventListener("change", () => {
-        var options = categorySelector.querySelectorAll("option"),
-            selectedValue;
+        
+
+        document.getElementById("add-category-accordian").style.display = (GetSelectedCategory().value == "New") ? "block" : "none"
+    }) 
+
+    function GetSelectedCategory(){
+        var options = categorySelector.querySelectorAll("option");
+        var selectedValue;
+        var selectedcategoryId;
 
         options.forEach(option => {
             if (option.selected){
@@ -218,13 +225,16 @@
                 selectedcategoryId = option.id
             } 
         })
-        console.log("op: " + selectedcategoryId)
-        document.getElementById("add-category-accordian").style.display = (selectedValue == "New") ? "block" : "none"
-    }) 
+        
+        return {
+            value: selectedValue,
+            id: selectedcategoryId
+        }
+    }
 
     function EditCategory(x){
-        if(selectedcategoryId)
-            window.location.href = '/category/' + selectedcategoryId + "/edit";
+        if(GetSelectedCategory().id)
+            window.location.href = '/category/' + GetSelectedCategory().id + "/edit";
     }
 </script>
 
