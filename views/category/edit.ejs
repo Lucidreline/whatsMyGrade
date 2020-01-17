@@ -5,6 +5,9 @@
 
 <section id="user-forms-without-photo-background">
     <div class="form-wrapper">
+        <h1>
+            <%= category._id %>
+        </h1>
         <form action="/category/<%= category._id %>/delete?_method=DELETE" method="POST">
             <button class="circle-btn delete-btn">
                 <i class="fas fa-trash-alt"></i>

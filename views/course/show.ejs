@@ -62,7 +62,7 @@
                             </select>
                         </div>
                     </div>
-                    <button id="edit-category-btn" onclick="EditCategory(this)">Edit This Category</button>
+                    <a id="edit-category-btn" onclick="EditCategory()">Edit This Category</a>
                     <div id="add-category-accordian">
                         <h5 class="newGrade-subtitle">
                             Create a category for this grade
@@ -244,7 +244,7 @@
         DecideToShowEditCategoryButton()
     }
 
-    function EditCategory(x){
+    function EditCategory(){
         if(GetSelectedCategory().id)
             window.location.href = '/category/' + GetSelectedCategory().id + "/edit";
     }

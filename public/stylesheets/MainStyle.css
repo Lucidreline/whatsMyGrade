@@ -210,6 +210,15 @@ select:-webkit-autofill:focus {
     border-radius: 0px 0px 20px 20px;
 }
 
+#edit-category-btn{
+    font-size: 1.8rem;
+    background-color: #4c6e97;
+    cursor: pointer;
+    padding: .65rem 1.2rem;
+    border-radius: 12px;
+    border: white solid 2px;
+}
+
 .new-grade-submit.submit-btn {
     width: 100%;
     padding: 2rem;
@@ -530,10 +539,10 @@ footer p{
 }
 
 @media only screen and (max-width:822px){
-.left-form-box, .right-form-box{
+    .left-form-box, .right-form-box{
     text-align: center ;
     }
-.under-line-input{
+    .under-line-input, #category-selector{
     text-align: center;
     margin: 0;
     }

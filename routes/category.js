@@ -9,37 +9,37 @@ let Category = require("../models/category"),
     Course = require("../models/course")
 
 //render the  edit page
-router.get("/category/:id/edit", middleware.isLoggedIn, (req, res)=>{
-    Category.findById(req.params.id, (errFindingCategory, foundCatgeory)=>{
-        if(errFindingCategory){
+router.get("/category/:id/edit", middleware.isLoggedIn, (req, res) => {
+    Category.findById(req.params.id, (errFindingCategory, foundCatgeory) => {
+        if (errFindingCategory) {
             req.flash("error", errFindingCategory.message);
             return res.redirect("/courses");
         }
-        Course.findById(foundCatgeory.course._id.toString(), (errorFindingCourse, foundCourse)=>{
-            res.render("category/edit", {category: foundCatgeory, course: foundCourse});
+        Course.findById(foundCatgeory.course._id.toString(), (errorFindingCourse, foundCourse) => {
+            res.render("category/edit", { category: foundCatgeory, course: foundCourse });
         })
     })
 })
 
 //processes the edit information
-router.put("/category/:id/edit", middleware.isLoggedIn, (req, res)=>{
-    Category.findById(req.params.id, (errorUpdatingCategory, foundCategory)=>{
+router.put("/category/:id/edit", middleware.isLoggedIn, (req, res) => {
+    Category.findById(req.params.id, (errorUpdatingCategory, foundCategory) => {
         foundCategory.name = req.body.category.name
         foundCategory.percentWorth = req.body.category.percentWorth
         foundCategory.color = req.body.category.color
-        
+
 
         //lets find all the grades that are associated with this category and edit them
-        Grade.find({category: foundCategory._id},  (errorFindingGrades, foundGrades)=>{
-            foundGrades.forEach(async grade =>{
+        Grade.find({ category: foundCategory._id }, (errorFindingGrades, foundGrades) => {
+            foundGrades.forEach(async grade => {
                 grade.categoryName = req.body.category.name;
                 grade.categoryColor = req.body.category.color;
                 grade.percentWorth = req.body.category.percentWorth;
                 await functions.SaveObjectToDatabase(foundCategory)
                 await functions.SaveObjectToDatabase(grade)
 
-                Course.findById(foundCategory.course._id, async (errorFindingCourse, foundCourse)=>{
-                    try{
+                Course.findById(foundCategory.course._id, async (errorFindingCourse, foundCourse) => {
+                    try {
                         await refreshGradesAfterAddedPercentagesValue(foundCourse)
                     }
                     catch{
@@ -48,7 +48,7 @@ router.put("/category/:id/edit", middleware.isLoggedIn, (req, res)=>{
                     res.redirect("/courses/" + foundCategory.course._id)
                 })
 
-                
+
 
             })
         })
@@ -56,21 +56,40 @@ router.put("/category/:id/edit", middleware.isLoggedIn, (req, res)=>{
 })
 
 //deletes the category
-router.delete("/category/:id/delete", middleware.isLoggedIn, (req, res)=>{
-    Category.findOneAndRemove(req.params.id, (errorDeletingCategory, deletedCategory)=>{
-        Grade.deleteMany({category: deletedCategory._id}, (errorFindingGrades, foundGrades)=>{
-            Course.findById(deletedCategory.course, (errorFindingCourse, foundCourse)=>{
-                for (let i = 0; i < foundCourse.categories.length; i++) {
-                    if(foundCourse.categories[i].toString() == deletedCategory._id.toString()){
-                        foundCourse.categories.splice(i, 1)
-                    }      
-                }
-                foundCourse.save((errorSavingCourse, savedCourse)=>{
-                    res.redirect("/courses/" + savedCourse._id)
+router.delete("/category/:id/delete", middleware.isLoggedIn, (req, res) => {
+    try {
+        Category.findByIdAndRemove(req.params.id, (errorDeletingCategory, deletedCategory) => {
+            Grade.find({ category: deletedCategory._id }, (errorSearchingForGrades, gradesToDelete) => { //gets a list of all the grades that will be deleted because the DeleteMany method doesnt return that information
+                Grade.deleteMany({ category: deletedCategory._id }, (errorFindingGrades, callBack) => { //deletes all the grades in the category
+                    Course.findById(deletedCategory.course._id, (errorFindingCourse, foundCourse) => { //finds the course that the category belongs to
+
+
+                        for (let i = 0; i < foundCourse.grades.length; i++) { // loops through all the grade IDs in the course
+                            for (let j = 0; j < gradesToDelete.length; j++) { //loops through all the grades that will be deleted along with the category
+                                if (foundCourse.grades[i].toString() == gradesToDelete[j]._id.toString()) //checks to see if the id in the course matches an id that will be deleted
+                                    foundCourse.grades.splice(i, 1) //if it matches, the grade id will be removed from the course list since the actual grade was just deleted
+                            }
+                        }
+
+                        
+                        for (let i = 0; i < foundCourse.categories.length; i++) { //deletes the category out of the course
+                            if (foundCourse.categories[i].toString() == deletedCategory._id.toString()) {
+                                foundCourse.categories.splice(i, 1)
+                                break; //breaks because once the category is found, it will not find another since IDs are unique
+                            }
+                        }
+                        foundCourse.save((errorSavingCourse, savedCourse) => {
+                            res.redirect("/courses/" + savedCourse._id)
+                        })
+                    })
                 })
             })
         })
-    })
+    }
+    catch (errorWithCodeBlock) {
+        console.log("ERROR DELETING CATEGORY " + errorWithCodeBlock)
+        res.redirect("/courses")
+    }
 })
 
 module.exports = router
@@ -119,7 +138,7 @@ function refreshGradesAfterAddedPercentagesValue(_course) {
 
                     //Calculates the grade at this point in time. Each time this is looped through, it calculates the percent taking to account one more grade then it previously did until it reaches the last grade
                     currentPercentage = (sumOfArray(listOfcalculatedPercentages) / (sumOfArray(listOfPercentWorths)))
-                    
+
                     //empties the list so things wont be repeated. 
                     //the only thing that is not dumped is the list of new categories
                     listOfcalculatedPercentages = [];
@@ -129,7 +148,7 @@ function refreshGradesAfterAddedPercentagesValue(_course) {
 
                 })
                 //this gives the course a percentage based on ALL the enabled grades in it
-                    //Enabled grades will be part of a future feature where some grades can be disabled due to special cases such as the professor drops the lowest 3 quizes etc.
+                //Enabled grades will be part of a future feature where some grades can be disabled due to special cases such as the professor drops the lowest 3 quizes etc.
                 _course.percentage = currentPercentage;
                 await SaveObjectToDatabase(_course);
                 resolve();
@@ -145,16 +164,16 @@ function refreshGradesAfterAddedPercentagesValue(_course) {
 function sumOfArray(_arr) {
     var sum = 0;
     for (var i = 0; i < _arr.length; i++)
-    sum += _arr[i];
-    
+        sum += _arr[i];
+
     return sum;
 }
 
 function averageOfArray(_arr) {
     var sum = 0;
     for (var i = 0; i < _arr.length; i++)
-    sum += _arr[i];
-    
+        sum += _arr[i];
+
     return sum / _arr.length;
 }
 
@@ -168,10 +187,10 @@ function SaveObjectToDatabase(_object) {
                 //call back function for the saved object. Stops the code if the object wasn't successfuly saved
                 if (errorSavingObject)
                     reject(errorSavingObject);
-                    else
+                else
                     resolve();
-                    //The line above resolves the promise if there was no errors
-                })
+                //The line above resolves the promise if there was no errors
+            })
         })
     }
 }
