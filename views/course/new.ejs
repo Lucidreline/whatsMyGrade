@@ -29,9 +29,6 @@
                 </div>
             </div>
             <div class="row">
-                <!-- <div class="">
-                    <canvas id="colorPickerCanvas"></canvas>
-                </div> -->
                 <div class="slidecontainer">
                     <input style="display: none;" id="courseColorInput" type="text" name="course[color]" placeholder="Course color">
                     <input oninput="UpdateColor(this)" type="range" min="120" max="255" value="171" class="slider" id="redSlider">
@@ -48,38 +45,7 @@
     </div>
 </section>
 
-<!-- picking a color -->
-<script>
-let colors = {
-    red: 171,
-    green: 250,
-    blue: 230,
-}
-
-rgbColor = "rgb(" + colors.red + ", " + colors.green + ", " + colors.blue + ")"
-
-ProcessColor(rgbColor)
-
-function UpdateColor(_slider){
-    console.log(_slider)
-    if(_slider.id == "redSlider"){
-        colors.red = _slider.value
-    }
-    else if(_slider.id == "greenSlider"){
-        colors.green = _slider.value
-    }
-    else if(_slider.id == "blueSlider"){
-        colors.blue = _slider.value
-    }
-    rgbColor = "rgb(" + colors.red + ", " + colors.green + ", " + colors.blue + ")"
-    ProcessColor(rgbColor)
-}
-
-function ProcessColor(_color){
-    document.getElementById("colorViewer").style.backgroundColor = _color
-    document.getElementById("courseColorInput").value = _color
-}
-</script>
+<script src="/scripts/chosingAColor.js"></script>
 
 
 <!-- Script for adding the help messages on inputs -->
