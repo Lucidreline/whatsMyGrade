@@ -11,7 +11,7 @@
         <h3><%= course.percentage.toFixed(2) %>%</h3>
     </header>
 
-    <section class="graph-section" style="width: 88%; margin:3rem auto;">
+    <section id="grade-graph" class="graph-section" style="width: 88%; margin:3rem auto;">
         <canvas id="gradeGraph"></canvas>
     </section>
 
@@ -62,7 +62,7 @@
                             </select>
                         </div>
                     </div>
-                    <button onclick="EditCategory(this)">Edit This Category</button>
+                    <button id="edit-category-btn" onclick="EditCategory(this)">Edit This Category</button>
                     <div id="add-category-accordian">
                         <h5 class="newGrade-subtitle">
                             Create a category for this grade
@@ -141,10 +141,8 @@
 
 <!-- Script to show the hint messages for the inputs -->
 <script>
-
     //grade hints 
     let gradeInputHelp = document.getElementById("gradeInputHelp");
-    console.log(gradeInputHelp)
 
     function showGradeNameHint(x) {
         gradeInputHelp.style.display = "block"
@@ -209,6 +207,7 @@
     //Pulls out the new category menu if the new option is selected
     var categorySelector = document.getElementById("category-selector")
     categorySelector.addEventListener("change", () => {
+        DecideToShowEditCategoryButton()
         
 
         document.getElementById("add-category-accordian").style.display = (GetSelectedCategory().value == "New") ? "block" : "none"
@@ -230,6 +229,19 @@
             value: selectedValue,
             id: selectedcategoryId
         }
+    }
+
+    function DecideToShowEditCategoryButton(){
+        if(GetSelectedCategory().value == "New"){
+            document.getElementById("edit-category-btn").style.display = "none"
+        }else{
+            document.getElementById("edit-category-btn").style.display = "inline-block"
+        }
+    }
+
+    function PageLoad(){
+        console.log("word")
+        DecideToShowEditCategoryButton()
     }
 
     function EditCategory(x){

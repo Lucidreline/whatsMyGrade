@@ -57,7 +57,20 @@ router.put("/category/:id/edit", middleware.isLoggedIn, (req, res)=>{
 
 //deletes the category
 router.delete("/category/:id/delete", middleware.isLoggedIn, (req, res)=>{
-    res.send("You want to delete")
+    Category.findOneAndRemove(req.params.id, (errorDeletingCategory, deletedCategory)=>{
+        Grade.deleteMany({category: deletedCategory._id}, (errorFindingGrades, foundGrades)=>{
+            Course.findById(deletedCategory.course, (errorFindingCourse, foundCourse)=>{
+                for (let i = 0; i < foundCourse.categories.length; i++) {
+                    if(foundCourse.categories[i].toString() == deletedCategory._id.toString()){
+                        foundCourse.categories.splice(i, 1)
+                    }      
+                }
+                foundCourse.save((errorSavingCourse, savedCourse)=>{
+                    res.redirect("/courses/" + savedCourse._id)
+                })
+            })
+        })
+    })
 })
 
 module.exports = router
