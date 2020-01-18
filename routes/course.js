@@ -40,7 +40,7 @@ router.post("/courses/new", middlware.isLoggedIn, (req, res) => {
         return functions.showErrorAndRefresh(req, res, "Oops, name must be at least one character")
 
     if (req.body.course.color.trim() == "")
-        return functions.showErrorAndRefresh(req, res, "Oops, Click a color before moving on")
+        return functions.showErrorAndRefresh(req, res, "Oops, pick a color before moving on")
 
     //creates the course using the forms data
     Course.create(req.body.course, (err, createdCourse) => {
@@ -113,7 +113,7 @@ router.put("/courses/:id/edit", middlware.isLoggedIn, (req, res) => {
         return functions.showErrorAndRefresh(req, res, "Oops, name must be at least one character")
 
     if (req.body.course.color.trim() == "")
-        return functions.showErrorAndRefresh(req, res, "Oops, Click a color before moving on")
+        return functions.showErrorAndRefresh(req, res, "Oops, pick a color before moving on")
 
     Course.findByIdAndUpdate(req.params.id, req.body.course, (errorUpdatingCourse, updatedCourse) => { //Finds the course by its ID
         if (errorUpdatingCourse || !updatedCourse) { //if there is an error finding the course or if it can not be

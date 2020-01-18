@@ -161,6 +161,14 @@ nav ul{
     display: none;
 }
 
+.help-text{
+    font-size: 1.8rem;
+    text-align: center;
+    width: 80%;
+    color: white;
+    text-shadow: 0 0 0 black;
+}
+
 /* Change Autocomplete styles in Chrome*/
 input:-webkit-autofill,
 input:-webkit-autofill:hover, 
@@ -238,7 +246,7 @@ select:-webkit-autofill:focus {
 }
 
 .slidecontainer {
-    width: 100%; /* Width of the outside container */
+    width: 90%; /* Width of the outside container */
   }
   
   /* The slider itself */
@@ -400,6 +408,10 @@ select:-webkit-autofill:focus {
     justify-content: center;
     align-items: center;
     text-align: center;
+}
+
+#course-banner h2{
+    text-shadow:  0px 3px 0.5rem rgba(0, 0, 0, 0.671);
 }
 
 .grade{
@@ -607,7 +619,7 @@ footer p{
 
 @media only screen and (max-width:988px){
     html{
-        font-size: 80%;
+        font-size: 70%;
     }
     nav {
         text-align: center;
@@ -623,6 +635,6 @@ footer p{
 
 @media only screen and (max-width:640px){
     html{
-        font-size: 100%;
+        font-size: 52.5%;
     }
 }
