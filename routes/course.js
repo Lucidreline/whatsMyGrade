@@ -18,7 +18,7 @@ router.get("/courses", middlware.isLoggedIn, async (req, res) => {
         }
 
         //written by adrianita Jimenez
-        let myQuotes = ["Keep up the good work!", "The grind never stops", "Don't give up yet!", "You have a bright future ahead of you!", "The secret of getting ahead is getting started", "You miss 100% of the shots you don't take"]
+        let myQuotes = ["Keep up the good work!", "The grind never stops", "Don't give up!", "You have a bright future ahead of you!", "The secret of getting ahead is getting started", "You miss 100% of the shots you don't take"]
         var magicRandomNumber = Math.random() * myQuotes.length
 
         magicRandomNumber = Math.floor(magicRandomNumber)
@@ -40,7 +40,7 @@ router.post("/courses/new", middlware.isLoggedIn, (req, res) => {
         return functions.showErrorAndRefresh(req, res, "Oops, name must be at least one character")
 
     if (req.body.course.color.trim() == "")
-        return functions.showErrorAndRefresh(req, res, "Oops, Click a color before moving on")
+        return functions.showErrorAndRefresh(req, res, "Oops, pick a color before moving on")
 
     //creates the course using the forms data
     Course.create(req.body.course, (err, createdCourse) => {
@@ -113,7 +113,7 @@ router.put("/courses/:id/edit", middlware.isLoggedIn, (req, res) => {
         return functions.showErrorAndRefresh(req, res, "Oops, name must be at least one character")
 
     if (req.body.course.color.trim() == "")
-        return functions.showErrorAndRefresh(req, res, "Oops, Click a color before moving on")
+        return functions.showErrorAndRefresh(req, res, "Oops, pick a color before moving on")
 
     Course.findByIdAndUpdate(req.params.id, req.body.course, (errorUpdatingCourse, updatedCourse) => { //Finds the course by its ID
         if (errorUpdatingCourse || !updatedCourse) { //if there is an error finding the course or if it can not be

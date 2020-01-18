@@ -23,6 +23,13 @@ router.get("/category/:id/edit", middleware.isLoggedIn, (req, res) => {
 
 //processes the edit information
 router.put("/category/:id/edit", middleware.isLoggedIn, (req, res) => {
+
+    if (req.body.category.name.trim().length < 1)
+        return functions.showErrorAndRefresh(req, res, "Oops, name must be at least one character")
+
+    if (req.body.category.percentWorth < 1)
+        return functions.showErrorAndRefresh(req, res, "Oops, percent worth must be atleast 1%")
+
     Category.findById(req.params.id, (errorUpdatingCategory, foundCategory) => {
         foundCategory.name = req.body.category.name
         foundCategory.percentWorth = req.body.category.percentWorth
