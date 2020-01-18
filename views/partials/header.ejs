@@ -1,20 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <title>What's My Grade | Grade Calculator</title>
-    <meta name="description" content="Easily track your grades across multiple classes. By taking into consideration the weight of each grade you enter, my algorithm will give you an accurate representation of what your grade is and how it has changed over time.">
+    <meta name="description"
+        content="Easily track your grades across multiple classes. By taking into consideration the weight of each grade you enter, my algorithm will give you an accurate representation of what your grade is and how it has changed over time.">
     <meta charset="utf-8">
     <meta name="robots" content="index,follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-    <link rel="shortcut icon" href="/icons/grade.ico"/>
+
+    <link rel="shortcut icon" href="/icons/grade.ico" />
     <script src="https://kit.fontawesome.com/3a9c9e1d26.js" crossorigin="anonymous"></script>
-    <link href="https://fonts.googleapis.com/css?family=Pattaya|Poppins:500&display=swap" rel="stylesheet">    
+    <link href="https://fonts.googleapis.com/css?family=Pattaya|Poppins:500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/stylesheets/MainStyle.css">
-    
-    
-    
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-156469216-1"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+
+        gtag('config', "<%= analyticsCode %>");
+    </script>
+
+
 </head>
+
 <body onload="PageLoad()">
     <header>
         <div class="main-head">
@@ -29,24 +41,24 @@
                     </li>
                     <li>
                         <% if (loggedInUser){ %>
-                            <a class="nav-text" href="/user/logout">Log Out</a>
+                        <a class="nav-text" href="/user/logout">Log Out</a>
                         <%}else{ %>
-                            <a class="nav-text" href="/user/login">Log In</a>
+                        <a class="nav-text" href="/user/login">Log In</a>
                         <% } %>
                     </li>
                 </ul>
             </nav>
             <div class="flash">
-                    <% if(success && success.length > 0){ %>
-                        <div class="flash-message success">
-                            <%= success %>
-                        </div>
-                    
-                    <% }if(error && error.length > 0){ %>
-                        <div class="flash-message error">
-                            <%= error %>
-                        </div>
-                    <% } %>
+                <% if(success && success.length > 0){ %>
+                <div class="flash-message success">
+                    <%= success %>
+                </div>
+
+                <% }if(error && error.length > 0){ %>
+                <div class="flash-message error">
+                    <%= error %>
+                </div>
+                <% } %>
             </div>
         </div>
-    </header> 
+    </header>
