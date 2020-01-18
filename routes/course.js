@@ -18,7 +18,7 @@ router.get("/courses", middlware.isLoggedIn, async (req, res) => {
         }
 
         //written by adrianita Jimenez
-        let myQuotes = ["Keep up the good work!", "The grind never stops", "Don't give up yet!", "You have a bright future ahead of you!", "The secret of getting ahead is getting started", "You miss 100% of the shots you don't take"]
+        let myQuotes = ["Keep up the good work!", "The grind never stops", "Don't give up!", "You have a bright future ahead of you!", "The secret of getting ahead is getting started", "You miss 100% of the shots you don't take"]
         var magicRandomNumber = Math.random() * myQuotes.length
 
         magicRandomNumber = Math.floor(magicRandomNumber)

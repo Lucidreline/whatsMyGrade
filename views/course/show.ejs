@@ -185,9 +185,25 @@
 
 <!-- Script to change colors of the page -->
 <script>
+
+
+function LightenRgb(_rgbColor, _addBy){
+    rgb = _rgbColor;
+    rgb = rgb.substring(4, rgb.length - 1)
+    .replace(/ /g, '')
+    .split(',');
+
+    for(var i = 0; i<rgb.length;i++){
+        rgb[i] = parseInt(rgb[i]) + _addBy;
+        if(rgb[i] > 255) rgb[i] = 255
+    }
+    return "rgb(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ")"
+}
+
+
     //set background color
     var courseColorHexCode = document.getElementById("bodyColorHolder").textContent.trim();
-    document.body.style.background = "linear-gradient(to right," + courseColorHexCode + ", " + courseColorHexCode + ", " + courseColorHexCode + ")";
+    document.body.style.background = "linear-gradient(to right," + LightenRgb(courseColorHexCode, 40) + ", " + LightenRgb(courseColorHexCode, 55) + ", " + LightenRgb(courseColorHexCode, 40) + ")";
 
     let navText = document.getElementsByClassName("nav-text");
     for (var i = 0; i < navText.length; i++) {
@@ -244,10 +260,8 @@
         }
     }
 
-    function PageLoad(){
-        console.log("word")
-        DecideToShowEditCategoryButton()
-    }
+
+    DecideToShowEditCategoryButton()
 
     function EditCategory(){
         if(GetSelectedCategory().id)

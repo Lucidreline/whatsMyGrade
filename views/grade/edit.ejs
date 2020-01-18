@@ -1,7 +1,7 @@
 <% include ../partials/header %>
 
 <p style="display:none;" id="categoryColorHolder"> <%= grade.categoryColor %> </p>
-<p style="display:none;" id="bodyColorHolder"> <%= course.color %> </p>
+<p style="display:none;" id="courseColorHolder"> <%= course.color %> </p>
 
 
 
@@ -57,14 +57,17 @@
                         <select onfocus="showCategoryHint(this)" name="exsistingCategory[name]" id="category-selector">
                             <% categories.forEach((category)=>{ %>
                             <% if(grade.category.toString() == category._id.toString()){ %>
-                            <option selected value="<%= category.name %>"><%= category.name %></option>
+                            <option id="<%= category._id %>" selected value="<%= category.name %>"><%= category.name %></option>
                             <% }else{ %>
-                            <option value="<%= category.name %>"><%= category.name %></option>
+                            <option id="<%= category._id %>" value="<%= category.name %>"><%= category.name %></option>
                             <% } %>
                             <% }) %>
                             <option value="New">New</option>
                         </select>
                     </div>
+                </div>
+                <div class="row-center">
+                    <a id="edit-category-btn" onclick="EditCategory()">Edit This Category</a>
                 </div>
                 <div id="add-category-accordian">
                     <h5 class="newGrade-subtitle">
@@ -121,7 +124,6 @@
 
     //grade hints 
     let gradeInputHelp = document.getElementById("gradeInputHelp");
-    console.log(gradeInputHelp)
 
     function showGradeNameHint(x) {
         gradeInputHelp.style.display = "block"
@@ -158,18 +160,9 @@
 </script>
 
 <script>
-    var courseColorHexCode = document.getElementById("bodyColorHolder").textContent.trim(),
-        categoryColorHexCode = document.getElementById("categoryColorHolder").textContent.trim();
-
-    document.body.style.background = "linear-gradient(to right," + courseColorHexCode + ", " + categoryColorHexCode + "67, " + courseColorHexCode + ")";
-
-    let navText = document.getElementsByClassName("nav-text");
-    for (var i = 0; i < navText.length; i++) {
-        navText[i].style.color = categoryColorHexCode;
-    }
-
     var categorySelector = document.getElementById("category-selector")
     categorySelector.addEventListener("change", () => {
+        DecideToShowEditCategoryButton()
         var options = categorySelector.querySelectorAll("option"),
             selectedValue;
 
@@ -179,75 +172,68 @@
         document.getElementById("add-category-accordian").style.display = (selectedValue == "New") ? "block" : "none"
     })
 
+    function GetSelectedCategory(){
+        var options = categorySelector.querySelectorAll("option");
+        var selectedValue;
+        var selectedcategoryId;
+
+        options.forEach(option => {
+            if (option.selected){
+                selectedValue = option.value;
+                selectedcategoryId = option.id
+            } 
+        })
+        return {
+            value: selectedValue,
+            id: selectedcategoryId
+        }
+    }
+
+    function DecideToShowEditCategoryButton(){
+        if(GetSelectedCategory().value == "New"){
+            document.getElementById("edit-category-btn").style.display = "none"
+        }else{
+            document.getElementById("edit-category-btn").style.display = "inline-block"
+        }
+    }
+
+
+    DecideToShowEditCategoryButton()
+
+    function EditCategory(){
+        if(GetSelectedCategory().id)
+            window.location.href = '/category/' + GetSelectedCategory().id + "/edit";
+    }
+
 </script>
 
 <script>
-    //Script for picking a color
-    var canvas = document.getElementById("colorPickerCanvas");
 
-    function getElementPosition(obj) {
-        var curleft = 0, curtop = 0;
-        if (obj.offsetParent) {
-            do {
-                curleft += obj.offsetLeft;
-                curtop += obj.offsetTop;
-            } while (obj = obj.offsetParent);
-            return { x: curleft, y: curtop };
-        }
-        return undefined;
+currentCategoryColor = document.getElementById("categoryColorHolder").innerText.trim();
+currentCourseColor = document.getElementById("courseColorHolder").innerText.trim();
+document.body.style.background = 'linear-gradient(' + LightenRgb(currentCategoryColor) + ", " + currentCourseColor + ", " + LightenRgb(currentCategoryColor) + ')';
+
+
+   
+
+let navText = document.getElementsByClassName("nav-text");
+    for (var i = 0; i < navText.length; i++) {
+        navText[i].style.color = currentCategoryColor;
     }
 
-    function getEventLocation(element, event) {
-        var pos = getElementPosition(element);
+function LightenRgb(_rgbColor){
+    rgb = _rgbColor;
+    rgb = rgb.substring(4, rgb.length - 1)
+    .replace(/ /g, '')
+    .split(',');
 
-        return {
-            x: (event.pageX - pos.x),
-            y: (event.pageY - pos.y)
-        };
+    for(var i = 0; i<rgb.length;i++){
+        rgb[i] = parseInt(rgb[i]) + 20;
+        if(rgb[i] > 255) rgb[i] = 255
     }
+    return "rgb(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ")"
+}
 
-    function rgbToHex(r, g, b) {
-        if (r > 255 || g > 255 || b > 255)
-            throw "Invalid color component";
-        return ((r << 16) | (g << 8) | b).toString(16);
-    }
-
-    function drawImageFromWebUrl(sourceurl) {
-        var img = new Image();
-        img.crossOrigin = "Anonymous";
-
-        img.addEventListener("load", function () {
-            // The image can be drawn from any source
-            canvas.width = img.width * 1.2;
-            canvas.height = img.height * 1.2;
-            canvas.getContext("2d").drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
-
-        });
-
-        img.setAttribute("src", sourceurl);
-    }
-    // Draw a base64 image because this is a fiddle, and if we try with an image from URL we'll get tainted canvas error
-    // Read more about here : http://ourcodeworld.com/articles/read/182/the-canvas-has-been-tainted-by-cross-origin-data-and-tainted-canvases-may-not-be-exported
-    drawImageFromWebUrl("https://res.cloudinary.com/clubphotos/image/upload/v1576562609/Light_Colors.png");
-
-    canvas.addEventListener("click", function (e) {
-        var eventLocation = getEventLocation(this, e);
-        var coord = "x=" + eventLocation.x + ", y=" + eventLocation.y;
-
-        // Get the data of the pixel according to the location generate by the getEventLocation function
-        var context = this.getContext('2d');
-        var pixelData = context.getImageData(eventLocation.x, eventLocation.y, 1, 1).data;
-
-        // If transparency on the image
-        if ((pixelData[0] == 0) && (pixelData[1] == 0) && (pixelData[2] == 0) && (pixelData[3] == 0)) {
-            coord += " (Transparent color detected, cannot be converted to HEX)";
-        }
-
-        var hex = "#" + ("000000" + rgbToHex(pixelData[0], pixelData[1], pixelData[2])).slice(-6);
-
-        // Draw the color and coordinates.
-        document.getElementById("colorViewer").style.backgroundColor = hex;
-        document.getElementById("courseColorInput").value = hex;
-    }, false);
 </script>
+
 <% include ../partials/footer %>

@@ -44,9 +44,9 @@
                 <div class="">
                     <div class="slidecontainer">
                         <input style="display: none;" id="courseColorInput" type="text" name="category[color]" placeholder="Course color">
-                        <input oninput="UpdateColor(this)" type="range" min="120" max="255" value="171" class="slider" id="redSlider">
-                        <input oninput="UpdateColor(this)" type="range" min="120" max="255" value="250" class="slider" id="greenSlider">
-                        <input oninput="UpdateColor(this)" type="range" min="120" max="255" value="230" class="slider" id="blueSlider">
+                        <input oninput="UpdateColor(this); ChangeBackgroundColor()" type="range" min="120" max="255" value="171" class="slider" id="redSlider">
+                        <input oninput="UpdateColor(this); ChangeBackgroundColor()" type="range" min="120" max="255" value="250" class="slider" id="greenSlider">
+                        <input oninput="UpdateColor(this); ChangeBackgroundColor()" type="range" min="120" max="255" value="230" class="slider" id="blueSlider">
                     </div>
                 </div>
             </div>
@@ -60,6 +60,28 @@
 
 <!-- Lets us use color sliders -->
 <script src="/scripts/ChoosingOldColor.js"></script>
+
+<script>
+
+currentCategoryColor = document.getElementById("colorViewer").className;
+currentCourseColor = document.getElementById("courseColorHex").innerText
+document.body.style.background = 'linear-gradient(' + LightenRgb(currentCategoryColor) + ", " + currentCourseColor + ", " + LightenRgb(currentCategoryColor) + ')';
+
+
+function LightenRgb(_rgbColor){
+    rgb = _rgbColor;
+    rgb = rgb.substring(4, rgb.length - 1)
+    .replace(/ /g, '')
+    .split(',');
+
+    for(var i = 0; i<rgb.length;i++){
+        rgb[i] = parseInt(rgb[i]) + 20;
+        if(rgb[i] > 255) rgb[i] = 255
+    }
+    return "rgb(" + rgb[0] + ", " + rgb[1] + ", " + rgb[2] + ")"
+}
+
+</script>
 
 
 <% include ../partials/footer %>
