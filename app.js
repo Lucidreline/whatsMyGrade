@@ -70,6 +70,7 @@ app.use(function(req, res, next){ //A middleware. before any page is loaded, it 
     //This lets us access the current user's information.
     //We can use it to display the current users name or courses
     res.locals.loggedInUser = req.user; //lets us use the req.user variable from any page
+    res.locals.analyticsCode = process.env.GoogleAnalytics
     res.locals.error = req.flash("error")// Gives all pages access to the error flash
     res.locals.success = req.flash("success")// Gives all pages access to the success flash
     next(); //Starts the next middlewar in the route or if there isnt any more, it will call the call back function
