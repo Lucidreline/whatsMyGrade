@@ -5,9 +5,6 @@
 
 <section id="user-forms-without-photo-background">
     <div class="form-wrapper">
-        <h1>
-            <%= category._id %>
-        </h1>
         <form action="/category/<%= category._id %>/delete?_method=DELETE" method="POST">
             <button class="circle-btn delete-btn">
                 <i class="fas fa-trash-alt"></i>
@@ -45,91 +42,24 @@
             </div>
             <div class="form-row">
                 <div class="">
-                    <input required id="categoryColorInput" type="text" name="category[color]" placeholder="category color" value="<%= category.color %>"
-                    style="display: none;">
-                
-                <canvas id="colorPickerCanvas"></canvas>
+                    <div class="slidecontainer">
+                        <input style="display: none;" id="courseColorInput" type="text" name="category[color]" placeholder="Course color">
+                        <input oninput="UpdateColor(this)" type="range" min="120" max="255" value="171" class="slider" id="redSlider">
+                        <input oninput="UpdateColor(this)" type="range" min="120" max="255" value="250" class="slider" id="greenSlider">
+                        <input oninput="UpdateColor(this)" type="range" min="120" max="255" value="230" class="slider" id="blueSlider">
+                    </div>
                 </div>
             </div>
             <div class="row">
-                <div id="colorViewer" style="background-color: <%= category.color %>;"></div>
+                <div class="<%= category.color %>" id="colorViewer" style="background-color: <%= category.color %>;"></div>
             </div>
             <button class="submit-btn" type="submit">Update!</button>
         </form>
     </div>
 </section>
 
-<!-- Gives us access to the color pallet -->
-<script>
-    var courseColorHexCode = document.getElementById("courseColorHex").textContent.trim()
-    var categoryColorHexCode = document.getElementById("categoryColorHex").textContent.trim()
-    document.body.style.background = "linear-gradient(to right," + courseColorHexCode + "ce, " + categoryColorHexCode + "be, " + courseColorHexCode + "ce)";
-    
-    var canvas = document.getElementById("colorPickerCanvas");
-    function getElementPosition(obj) {
-        var curleft = 0, curtop = 0;
-        if (obj.offsetParent) {
-            do {
-                curleft += obj.offsetLeft;
-                curtop += obj.offsetTop;
-            } while (obj = obj.offsetParent);
-            return { x: curleft, y: curtop };
-        }
-        return undefined;
-    }
+<!-- Lets us use color sliders -->
+<script src="/scripts/ChoosingOldColor.js"></script>
 
-    function getEventLocation(element, event) {
-        var pos = getElementPosition(element);
-
-        return {
-            x: (event.pageX - pos.x),
-            y: (event.pageY - pos.y)
-        };
-    }
-
-    function rgbToHex(r, g, b) {
-        if (r > 255 || g > 255 || b > 255)
-            throw "Invalid color component";
-        return ((r << 16) | (g << 8) | b).toString(16);
-    }
-
-    function drawImageFromWebUrl(sourceurl) {
-        var img = new Image();
-        img.crossOrigin = "Anonymous";
-
-        img.addEventListener("load", function () {
-            // The image can be drawn from any source
-            canvas.width = img.width * 1.2;
-            canvas.height = img.height * 1.2;
-            canvas.getContext("2d").drawImage(img, 0, 0, img.width, img.height, 0, 0, canvas.width, canvas.height);
-
-        });
-
-        img.setAttribute("src", sourceurl);
-    }
-    // Draw a base64 image because this is a fiddle, and if we try with an image from URL we'll get tainted canvas error
-    // Read more about here : http://ourcodeworld.com/articles/read/182/the-canvas-has-been-tainted-by-cross-origin-data-and-tainted-canvases-may-not-be-exported
-    drawImageFromWebUrl("https://res.cloudinary.com/clubphotos/image/upload/v1576562609/Light_Colors.png");
-
-    canvas.addEventListener("click", function (e) {
-        var eventLocation = getEventLocation(this, e);
-        var coord = "x=" + eventLocation.x + ", y=" + eventLocation.y;
-
-        // Get the data of the pixel according to the location generate by the getEventLocation function
-        var context = this.getContext('2d');
-        var pixelData = context.getImageData(eventLocation.x, eventLocation.y, 1, 1).data;
-
-        // If transparency on the image
-        if ((pixelData[0] == 0) && (pixelData[1] == 0) && (pixelData[2] == 0) && (pixelData[3] == 0)) {
-            coord += " (Transparent color detected, cannot be converted to HEX)";
-        }
-
-        var hex = "#" + ("000000" + rgbToHex(pixelData[0], pixelData[1], pixelData[2])).slice(-6);
-
-        // Draw the color and coordinates.
-        document.getElementById("colorViewer").style.backgroundColor = hex;
-        document.getElementById("categoryColorInput").value = hex;
-    }, false);
-</script>
 
 <% include ../partials/footer %>

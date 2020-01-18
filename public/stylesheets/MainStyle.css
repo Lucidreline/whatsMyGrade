@@ -93,6 +93,10 @@ nav ul{
     justify-content: space-around;
 }
 
+.row-center{
+    text-align: center;
+}
+
 .col-half{
     min-width: 50%;
     flex-grow: 1;
@@ -217,6 +221,8 @@ select:-webkit-autofill:focus {
     padding: .65rem 1.2rem;
     border-radius: 12px;
     border: white solid 2px;
+    margin-bottom: 0.5rem;
+    display: inline-block;
 }
 
 .new-grade-submit.submit-btn {

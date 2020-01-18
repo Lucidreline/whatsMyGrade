@@ -17,11 +17,17 @@ rgb = rgb.substring(4, rgb.length - 1)
 colors.red = rgb[0]
 colors.green = rgb[1]
 colors.blue = rgb[2]
+
+document.getElementById("redSlider").value = colors.red
+document.getElementById("greenSlider").value = colors.green
+document.getElementById("blueSlider").value = colors.blue
+
 console.log("want")
 ProcessColor("rgb(" + colors.red + ", " + colors.green + ", " + colors.blue + ")")
 console.log(rgb);
 
 function UpdateColor(_slider) {
+    console.log("sensing moement")
     if (_slider.id == "redSlider") {
         colors.red = _slider.value
     }
