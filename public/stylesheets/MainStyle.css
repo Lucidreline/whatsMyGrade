@@ -125,13 +125,84 @@ nav ul{
     background-attachment: fixed;
 
 }
-.hero h3{
-    padding: 2.5rem;
+
+
+.hero .hero-text-primary, .hero .hero-text-secondary{
+    text-shadow: -1px 1px 2rem black, -1px 1px 1rem black;
+    display: block;
 }
 
-.hero h2, .hero h3{
-    text-shadow: -1px 1px 2rem black, -1px 1px 1rem black;
+.hero .hero-text-primary{
+    letter-spacing: 0.2rem;
+    animation: FadeInFromLeft 2s;
+    font-size: 5rem;
 }
+
+.hero .hero-text-secondary{
+    font-weight: 400;
+    margin-bottom: 1rem;
+    animation: FadeInFromRight 2s;
+    font-size: 3rem;
+}
+
+.hero-btn{
+    background-color: white;
+    border-radius: 50px;
+    color: #131c27;
+    font-weight: 600;
+    font-size: 2.1rem;
+    padding: 1.2rem 3rem;
+    animation: FadeInFromBottom 0.5s 1.5s;
+    animation-fill-mode: backwards;
+    transition: 0.25s;
+}
+
+.hero-btn:hover{
+    box-shadow: -0.2rem 0.4rem 0.2rem rgba(0, 0, 0, 0.294);
+    transform: translateY(-0.3rem);
+    border: 0.25rem white solid;
+    color:white;
+    background-color: #131c27;
+}
+
+@keyframes FadeInFromLeft{
+    0%{
+        opacity: 0;
+        transform: translateX(-3.0rem);
+    }
+    75%{
+        transform: translateX(1.0rem);
+    }
+    100%{
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes FadeInFromRight{
+    0%{
+        opacity: 0;
+        transform: translateX(3.0rem);
+    }
+    75%{
+        transform: translateX(-1.0rem);
+    }
+    100%{
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+@keyframes FadeInFromBottom{
+    0%{
+        opacity: 0;
+        transform: translateY(2.0rem);
+    }
+    100%{
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 
 /* Forms */
 #user-forms{
