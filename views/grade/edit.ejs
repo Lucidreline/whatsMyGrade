@@ -36,7 +36,7 @@
                         <label>Points Recieved: </label>
                     </div>
                     <div class="right-form-box">
-                        <input onfocus="showPointsRecievedHint(this)" required type="number" name="grade[pointsRecieved]" placeholder="Points Recieved"
+                        <input onfocus="showPointsRecievedHint(this)" required type="number" step="0.01" name="grade[pointsRecieved]" placeholder="Points Recieved"
                             class="under-line-input" value="<%= grade.pointsRecieved %>">
                     </div>
                 </div>
@@ -45,7 +45,7 @@
                         <label>Total Possible Points: </label>
                     </div>
                     <div class="right-form-box">
-                        <input onfocus="showPossiblePointsHint(this)" required type="number" name="grade[possiblePoints]" placeholder="Total Possible Points"
+                        <input onfocus="showPossiblePointsHint(this)" required type="number" step="0.01" name="grade[possiblePoints]" placeholder="Total Possible Points"
                             class="under-line-input" value="<%= grade.possiblePoints %>">
                     </div>
                 </div>
